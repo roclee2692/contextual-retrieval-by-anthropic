@@ -70,7 +70,12 @@ class RAGWorkflow(Workflow):
     @step
     async def synthesize(self, ctx: Context, ev: RetrieverEvent) -> StopEvent:
 
-        llm = Ollama(model="gemma2:2b", request_timeout=60.0)
+        ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+        llm = Ollama(
+            model="gemma3:12b",
+            base_url=ollama_base_url,
+            request_timeout=120.0
+        )
         summarizer = CompactAndRefine(llm=llm, streaming=True, verbose=True, text_qa_template=qa_template)
         query = await ctx.get("query", default=None)
 

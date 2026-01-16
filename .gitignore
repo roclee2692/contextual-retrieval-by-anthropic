@@ -1,5 +1,48 @@
-data
-*__pycache__
-cook_book_db_bm25
-cook_book_db_vectordb
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# Database files
+src/db/canteen_db_vectordb/
+src/db/canteen_db_bm25/
+src/db/knowledge_graph/
+cook_book_db_bm25/
+cook_book_db_vectordb/
+
+# Data (keep structure, ignore large files)
+data/*.pdf
+data/processed/
+
+# Environment
 .env
+.env.local
+
+# Logs
+logs/
+*.log
+db_*.log
+
+# Test results (keep summary)
+ab_test_results_*.json
+report_experiment_*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+temp/

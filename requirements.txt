@@ -1,0 +1,11 @@
+llama-index-core
+llama-index-llms-ollama
+llama-index-embeddings-huggingface
+llama-index-vector-stores-chroma
+fastapi
+uvicorn
+streamlit
+python-dotenv
+chromadb
+pydantic
+requests

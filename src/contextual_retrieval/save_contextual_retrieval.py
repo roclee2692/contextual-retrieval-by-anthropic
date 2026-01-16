@@ -3,6 +3,7 @@ from llama_index.llms.ollama import Ollama
 from llama_index.core.node_parser import TokenTextSplitter
 from .save_vectordb import save_chromadb
 from .save_bm25 import save_BM25
+import os
 
 def create_and_save_db(
         data_dir: str, 
@@ -21,8 +22,15 @@ def create_and_save_db(
     CHUNK_OVERLAP = chunk_overlap
 
     # Initializing LLM for contextual retrieval
-    llm = Ollama(model="gemma2:2b", request_timeout=60.0)
-    
+    # 支持从环境变量配置 Ollama 地址（用于连接 WSL）
+    ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    llm = Ollama(
+        model="gemma3:12b",
+        base_url=ollama_base_url,
+        request_timeout=120.0,
+        context_window=8192
+    )
+
     # Reading documents
     reader = SimpleDirectoryReader(input_dir=DATA_DIR)
     documents = reader.load_data()

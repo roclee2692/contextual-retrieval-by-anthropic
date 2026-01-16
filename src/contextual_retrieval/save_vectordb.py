@@ -12,8 +12,11 @@ def save_chromadb(nodes: list,
     
     print("-:-:-:- ChromaDB [Vector Database] creating ... -:-:-:-")
 
-    # Embedding Model
-    embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-base-en-v1.5")
+    # Embedding Model - 使用中文模型！
+    embed_model = HuggingFaceEmbedding(
+        model_name="BAAI/bge-small-zh-v1.5",  # 中文模型
+        device="cpu"
+    )
 
     # Path to save the database file
     save_pth = os.path.join(save_dir, db_name)
