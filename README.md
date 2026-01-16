@@ -6,7 +6,56 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Reproducible](https://img.shields.io/badge/reproducible-yes-green.svg)](https://github.com/roclee2692/contextual-retrieval-by-anthropic)
 
-> **Key Finding**: Compared Baseline RAG, Contextual Retrieval (CR), and Knowledge Graph on the same dataset, revealing **CR's limitations on structured list data**.
+> **Based on**: [Anthropic's Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval) | **Extended with**: Chinese dataset + comparative experiments + jieba tokenization + knowledge graph
+
+---
+
+## ⚡ TL;DR
+
+**What**: Reproduced Anthropic's Contextual Retrieval on Chinese canteen menu data (270k chars) with 3 controlled experiments  
+**Best Result**: Jieba+KG achieved **10.13s avg response** (21% faster) with **19.9% hybrid retrieval speedup**  
+**Key Finding**: CR shows **double-edged effect** on structured data — +100% disambiguation accuracy but -100% on detail-heavy queries due to **lack of natural language context**
+
+### 📊 At-a-Glance Results
+
+| Experiment | Method | Avg Time | Overall Accuracy | Best Use Case |
+|-----------|--------|----------|-----------------|---------------|
+| **Exp 1** | Baseline RAG | 12.79s | 83.3% | Category queries (100%) |
+| **Exp 2** | CR Enhanced | 13.64s | **86.0%** ✅ | Price queries (100%), disambiguation |
+| **Exp 3** | Jieba + KG | **10.13s** ⚡ | 77.7% | Speed (21% faster than baseline) |
+
+**Winner**: CR improves accuracy by +3%, but **Jieba tokenization** brings the biggest speed gain (+21%)
+
+---
+
+## 🔄 System Pipeline
+
+```mermaid
+graph LR
+    A[PDF Data<br/>270k chars] --> B[Text Chunking<br/>512 tokens]
+    B --> C{CR Enabled?}
+    C -->|Yes| D[LLM Context Gen<br/>gemma2:2b]
+    C -->|No| E[Original Chunks]
+    D --> F[Concat Context<br/>+ Original]
+    E --> G[Embedding<br/>bge-small-zh]
+    F --> G
+    G --> H[Vector DB<br/>ChromaDB]
+    B --> I{Jieba?}
+    I -->|Yes| J[Chinese Tokenize]
+    I -->|No| K[Default English]
+    J --> L[BM25 Index<br/>bm25s]
+    K --> L
+    M[User Query] --> N[Hybrid Retrieval<br/>Vector + BM25]
+    H --> N
+    L --> N
+    N --> O[Top-12 Chunks]
+    O --> P[LLM Answer<br/>gemma3:12b]
+    P --> Q[Final Answer]
+    
+    style D fill:#ffe6e6
+    style J fill:#e6f7ff
+    style Q fill:#e6ffe6
+```
 
 ---
 
@@ -84,80 +133,70 @@ A critic exclaimed: 'A visual feast!'"
 
 ---
 
-## 🚀 How to Run
+## 🚀 Quickstart (Copy & Run)
 
-### 1. Environment Setup
+### Prerequisites
+- Python 3.11+
+- [Ollama](https://ollama.com/download) installed
+- Your own PDF data (or use the canteen menu structure)
+
+### 1️⃣ Setup Environment (5 min)
 
 ```bash
-# Clone repository
+# Clone and install
 git clone https://github.com/roclee2692/contextual-retrieval-by-anthropic.git
 cd contextual-retrieval-by-anthropic
-
-# Install dependencies
 pip install -r requirements.txt
 
-# Install Ollama (local LLM)
-# macOS/Linux: curl -fsSL https://ollama.com/install.sh | sh
-# Windows: https://ollama.com/download
-
-# Download models
-ollama pull gemma2:2b
-ollama pull gemma3:12b
+# Download LLMs
+ollama pull gemma2:2b    # For context generation
+ollama pull gemma3:12b   # For Q&A
 ```
 
-### 2. Prepare Data
+### 2️⃣ Prepare Data (2 min)
 
 ```bash
-# Place PDF files in data directory
+# Put your PDF in data/ folder
 mkdir -p data
-# Put canteen menu PDF into data/ folder
+cp /path/to/your/document.pdf data/
 ```
 
-### 3. Run Experiments
+### 3️⃣ Run All 3 Experiments (30 min total)
 
-#### Experiment 1: Baseline RAG
 ```bash
-# Create vector+BM25 database (without jieba)
+# Experiment 1: Baseline RAG (10 min)
+python scripts/create_save_db.py          # Build vector+BM25 DB
+python scripts/test_ab_simple.py          # Run 20 test questions
+# → Results: results/report_experiment_1_RAG_Chunked.txt
+
+# Experiment 2: CR Enhanced (15 min - LLM generates context)
+# Edit src/contextual_retrieval/save_contextual_retrieval.py: enable_cr = True
 python scripts/create_save_db.py
-
-# Run test
 python scripts/test_ab_simple.py
-# Results saved to: results/report_experiment_1_RAG_Chunked.txt
-```
+# → Results: results/report_experiment_2_CR_Prefixed.txt
 
-#### Experiment 2: Contextual Retrieval
-```bash
-# Create database with context enhancement
-# (Modify save_contextual_retrieval.py to enable CR)
+# Experiment 3: Jieba + KG (10 min + optional 40 min for KG)
+# Edit src/contextual_retrieval/save_bm25.py: use_jieba = True
 python scripts/create_save_db.py
-
-# Run test
+python scripts/create_knowledge_graph.py  # Optional
 python scripts/test_ab_simple.py
-# Results saved to: results/report_experiment_2_CR_Prefixed.txt
+# → Results: results/report_experiment_3_Jieba_KG.txt
 ```
 
-#### Experiment 3: Jieba + Knowledge Graph
-```bash
-# Rebuild database (enable jieba tokenization)
-python scripts/create_save_db.py
-
-# Create knowledge graph (optional, takes ~40 minutes)
-python scripts/create_knowledge_graph.py
-
-# Run test
-python scripts/test_ab_simple.py
-# Results saved to: results/report_experiment_3_Jieba_KG.txt
-```
-
-### 4. View Results
+### 4️⃣ View Results (1 min)
 
 ```bash
-# View comparison analysis
-cat docs/三个实验对比分析报告.md
+# Summary table
+cat results/summary_table.csv
 
-# View typical cases
+# Detailed case analysis
 cat results/cases.md
+
+# Full comparison report (Chinese)
+cat docs/三个实验对比分析报告.md
 ```
+
+**Expected Output**: 3 experiment reports + 1 summary CSV + 10 case analyses showing CR's double-edged effect
 
 ---
 
@@ -206,6 +245,12 @@ Covering four query types:
 - ✅ **Fully Correct**: Accurate and complete answer
 - ⚠️ **Partially Correct**: Answer has errors but direction correct
 - ❌ **Completely Wrong**: Incorrect answer or unable to respond
+
+### Annotation Process
+- **Annotator**: Single annotator (project author) with domain knowledge
+- **Consistency Check**: Cross-validated with ground truth from original PDF
+- **Output Constraints**: Answers must include location/price/category (or explicitly state "not available")
+- **Completeness Criteria**: Partial lists marked as incomplete if >50% items missing
 
 ### Sample Questions
 ```
@@ -295,25 +340,36 @@ With jieba: 19.9% hybrid retrieval speedup (+101% improvement)
 
 ---
 
-## 🗺️ Roadmap
+## 🗺️ Next Steps & Roadmap
 
-### Short-term Plans (1-2 weeks)
+### 🎯 Immediate TODOs (High Impact, 1-2 weeks)
 
-- [ ] **Change Dataset**: Retest CR with Douban reviews/Zhihu Q&A
-- [ ] **Add Reranking**: Implement bge-reranker-v2-m3
-- [ ] **Dynamic CR Strategy**: Enable CR based on query type
+- [ ] **Switch to Natural Language Dataset** (addresses core limitation)
+  - Target: 200-500 Chinese movie reviews (Douban) or Q&A pairs (Zhihu)
+  - Hypothesis: CR will show +20-30% accuracy gain on context-rich data
+  - Deliverable: Comparative report (structured vs natural language)
 
-### Mid-term Plans (1 month)
+- [ ] **Add Reranking Layer** ([Anthropic paper reports 20-30% boost](https://www.anthropic.com/news/contextual-retrieval))
+  - Implement: `bge-reranker-v2-m3` as post-retrieval step
+  - Expected: Reduce false positives in top-K results
+  - Effort: ~3 days (LlamaIndex has built-in support)
 
-- [ ] **Standard Dataset Testing**: DuReader, CMRC 2018
-- [ ] **Multilingual Comparison**: English vs Chinese CR effectiveness
-- [ ] **Automated Evaluation**: Introduce GPT-4 as evaluator
+- [ ] **Automated Evaluation Pipeline**
+  - Scale: 20 questions → 100 questions with auto-scoring
+  - Tools: GPT-4 as judge + F1/ROUGE metrics
+  - Reproducibility: Versioned test sets + CI/CD integration
 
-### Long-term Direction
+### 🚀 Mid-term Plans (1 month)
 
-- [ ] **Paper Writing**: Submit to conferences/journals
-- [ ] **Open Source Contribution**: Submit PR to llama-index for Chinese support
-- [ ] **Real Application**: Deploy optimized system in real scenarios
+- [ ] **Standard Chinese Benchmarks**: DuReader, CMRC 2018
+- [ ] **Dynamic CR Strategy**: Enable/disable CR based on query type detection
+- [ ] **Multilingual Comparison**: Validate if CR works better in English than Chinese
+
+### 🌟 Long-term Vision
+
+- [ ] **Academic Publication**: "When Does Contextual Retrieval Work? A Study on Data Type Boundaries"
+- [ ] **Open Source Contribution**: Submit Chinese tokenization PR to LlamaIndex
+- [ ] **Production Deployment**: Real-world RAG system with adaptive CR
 
 ---
 

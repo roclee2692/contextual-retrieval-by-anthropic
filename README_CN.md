@@ -6,7 +6,56 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Reproducible](https://img.shields.io/badge/reproducible-yes-green.svg)](https://github.com/roclee2692/contextual-retrieval-by-anthropic)
 
-> **核心发现**：在同一数据集与评测脚本下,对比了 Baseline RAG、Contextual Retrieval(CR)、知识图谱三种方法,发现 **CR 在结构化列表数据上存在明显局限**。
+> **基于**：[Anthropic的上下文检索](https://www.anthropic.com/news/contextual-retrieval) | **扩展**：中文数据集 + 对比实验 + 结巴分词 + 知识图谱
+
+---
+
+## ⚡ 三句话总结
+
+**做了什么**：在中文食堂菜单数据（27万字）上复现Anthropic上下文检索，进行3组对照实验  
+**最佳结果**：结巴分词+知识图谱实现**10.13秒平均响应**（快21%），**19.9%混合检索加速**  
+**核心发现**：CR在结构化数据上呈现**双刃剑效应** — 消歧准确率+100%，但细节查询准确率-100%，**根源在于缺少自然语言语境**
+
+### 📊 一目了然的结果对比
+
+| 实验 | 方法 | 平均耗时 | 整体准确率 | 最佳应用场景 |
+|------|------|---------|-----------|------------|
+| **实验1** | Baseline RAG | 12.79秒 | 83.3% | 分类查询(100%) |
+| **实验2** | CR增强 | 13.64秒 | **86.0%** ✅ | 价格查询(100%)、消歧 |
+| **实验3** | 结巴+知识图谱 | **10.13秒** ⚡ | 77.7% | 速度(比基线快21%) |
+
+**结论**：CR提升准确率+3%，但**结巴分词**带来最大速度提升(+21%)
+
+---
+
+## 🔄 系统流程图
+
+```mermaid
+graph LR
+    A[PDF数据<br/>27万字] --> B[文本分块<br/>512词元]
+    B --> C{启用CR?}
+    C -->|是| D[LLM生成上下文<br/>gemma2:2b]
+    C -->|否| E[原始分块]
+    D --> F[拼接上下文<br/>+原文]
+    E --> G[向量化<br/>bge-small-zh]
+    F --> G
+    G --> H[向量数据库<br/>ChromaDB]
+    B --> I{结巴分词?}
+    I -->|是| J[中文分词]
+    I -->|否| K[默认英文]
+    J --> L[BM25索引<br/>bm25s]
+    K --> L
+    M[用户查询] --> N[混合检索<br/>向量+BM25]
+    H --> N
+    L --> N
+    N --> O[Top-12结果]
+    O --> P[LLM回答<br/>gemma3:12b]
+    P --> Q[最终答案]
+    
+    style D fill:#ffe6e6
+    style J fill:#e6f7ff
+    style Q fill:#e6ffe6
+```
 
 ---
 
@@ -83,80 +132,70 @@
 
 ---
 
-## 🚀 如何运行
+## 🚀 快速开始（复制即跑）
 
-### 1. 环境准备
+### 前置条件
+- Python 3.11+
+- [Ollama](https://ollama.com/download) 已安装
+- 你的PDF数据（或使用食堂菜单结构）
+
+### 1️⃣ 环境配置（5分钟）
 
 ```bash
-# 克隆仓库
+# 克隆并安装依赖
 git clone https://github.com/roclee2692/contextual-retrieval-by-anthropic.git
 cd contextual-retrieval-by-anthropic
-
-# 安装依赖
 pip install -r requirements.txt
 
-# 安装 Ollama（本地大模型）
-# macOS/Linux: curl -fsSL https://ollama.com/install.sh | sh
-# Windows: https://ollama.com/download
-
-# 下载模型
-ollama pull gemma2:2b
-ollama pull gemma3:12b
+# 下载大模型
+ollama pull gemma2:2b    # 用于上下文生成
+ollama pull gemma3:12b   # 用于问答
 ```
 
-### 2. 准备数据
+### 2️⃣ 准备数据（2分钟）
 
 ```bash
-# 将 PDF 文件放入 data 目录
+# 将PDF放入data/文件夹
 mkdir -p data
-# 将食堂菜单 PDF 放入 data/ 文件夹
+cp /path/to/your/document.pdf data/
 ```
 
-### 3. 运行实验
+### 3️⃣ 运行全部3个实验（共30分钟）
 
-#### 实验一：Baseline RAG
 ```bash
-# 创建向量+BM25数据库（不使用结巴）
+# 实验1：Baseline RAG（10分钟）
+python scripts/create_save_db.py          # 构建向量+BM25数据库
+python scripts/test_ab_simple.py          # 运行20个测试问题
+# → 结果：results/report_experiment_1_RAG_Chunked.txt
+
+# 实验2：CR增强（15分钟 - LLM生成上下文）
+# 编辑 src/contextual_retrieval/save_contextual_retrieval.py: enable_cr = True
 python scripts/create_save_db.py
-
-# 运行测试
 python scripts/test_ab_simple.py
-# 结果保存在：results/report_experiment_1_RAG_Chunked.txt
-```
+# → 结果：results/report_experiment_2_CR_Prefixed.txt
 
-#### 实验二：上下文检索
-```bash
-# 创建带上下文增强的数据库
-# （修改 save_contextual_retrieval.py 以启用 CR）
+# 实验3：结巴+知识图谱（10分钟 + 可选40分钟构建图谱）
+# 编辑 src/contextual_retrieval/save_bm25.py: use_jieba = True
 python scripts/create_save_db.py
-
-# 运行测试
+python scripts/create_knowledge_graph.py  # 可选
 python scripts/test_ab_simple.py
-# 结果保存在：results/report_experiment_2_CR_Prefixed.txt
+# → 结果：results/report_experiment_3_Jieba_KG.txt
 ```
 
-#### 实验三：结巴分词 + 知识图谱
-```bash
-# 重建数据库（启用结巴分词）
-python scripts/create_save_db.py
-
-# 创建知识图谱（可选，耗时约40分钟）
-python scripts/create_knowledge_graph.py
-
-# 运行测试
-python scripts/test_ab_simple.py
-# 结果保存在：results/report_experiment_3_Jieba_KG.txt
-```
-
-### 4. 查看结果
+### 4️⃣ 查看结果（1分钟）
 
 ```bash
-# 查看对比分析
-cat docs/三个实验对比分析报告.md
+# 汇总表
+cat results/summary_table.csv
 
-# 查看典型案例
+# 详细案例分析
 cat results/cases.md
+
+# 完整对比报告
+cat docs/三个实验对比分析报告.md
 ```
+
+**预期输出**：3份实验报告 + 1份汇总CSV + 10个案例分析，展示CR的双刃剑效应
 
 ---
 
@@ -205,6 +244,12 @@ cat results/cases.md
 - ✅ **完全正确**：答案准确且完整
 - ⚠️ **部分正确**：答案有误但方向正确
 - ❌ **完全错误**：答案错误或无法回答
+
+### 标注流程
+- **标注人**：单人标注（项目作者）具备领域知识
+- **一致性检查**：与原始PDF的真实数据交叉验证
+- **输出约束**：答案必须包含位置/价格/分类（或明确说明"暂无"）
+- **完整性标准**：如果遗漏>50%项目则标记为不完整
 
 ### 示例问题
 ```
@@ -294,25 +339,36 @@ PDF → jieba分词 → 向量 + BM25(中文) → ChromaDB
 
 ---
 
-## 🗺️ 路线图
+## 🗺️ 下一步计划
 
-### 短期计划（1-2周）
+### 🎯 即将完成（高ROI，1-2周）
 
-- [ ] **更换数据集**：用豆瓣影评/知乎问答重新测试 CR
-- [ ] **添加 Reranking**：实现 bge-reranker-v2-m3
-- [ ] **动态 CR 策略**：根据查询类型决定是否启用 CR
+- [ ] **切换到自然语言数据集**（解决核心局限）
+  - 目标：200-500条中文影评（豆瓣）或问答对（知乎）
+  - 假设：CR在富语境数据上准确率提升+20-30%
+  - 交付物：结构化数据 vs 自然语言数据对比报告
 
-### 中期计划（1个月）
+- [ ] **添加重排序层**（[Anthropic论文显示可提升20-30%](https://www.anthropic.com/news/contextual-retrieval)）
+  - 实现：`bge-reranker-v2-m3`作为检索后处理步骤
+  - 预期：减少Top-K结果中的假阳性
+  - 工作量：~3天（LlamaIndex内置支持）
 
-- [ ] **标准数据集测试**：DuReader、CMRC 2018
-- [ ] **多语言对比**：英文 vs 中文 CR 有效性
-- [ ] **自动化评测**：引入 GPT-4 作为评判器
+- [ ] **自动化评测流水线**
+  - 规模：20题 → 100题 + 自动打分
+  - 工具：GPT-4作为评判器 + F1/ROUGE指标
+  - 可复现性：版本化测试集 + CI/CD集成
 
-### 长期方向
+### 🚀 中期计划（1个月）
 
-- [ ] **论文撰写**：投稿会议/期刊
-- [ ] **开源贡献**：向 llama-index 提交 PR 增强中文支持
-- [ ] **实际应用**：在真实场景部署优化后的系统
+- [ ] **标准中文基准测试**：DuReader、CMRC 2018
+- [ ] **动态CR策略**：根据查询类型检测决定是否启用CR
+- [ ] **多语言对比**：验证CR在英文和中文上的效果差异
+
+### 🌟 长期愿景
+
+- [ ] **学术发表**："上下文检索何时有效？数据类型边界研究"
+- [ ] **开源贡献**：向LlamaIndex提交中文分词PR
+- [ ] **生产部署**：在真实场景部署自适应CR的RAG系统
 
 ---
 
