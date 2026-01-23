@@ -10,14 +10,26 @@
 
 ---
 
-## 🎯 这是什么
+## 🎯 实验架构
 
-本项目基于中文数据集复现了 [Anthropic 的 Contextual Retrieval 论文](https://www.anthropic.com/news/contextual-retrieval)，并通过两个阶段的对比实验验证其有效性：
+本项目将研究分为两个阶段，包含 **5 组对比实验**，旨在全面评估 RAG 技术在不同数据形态下的表现：
 
-| 实验阶段 | 方法 | 核心技术 | 适用数据 |
+### 第一阶段：结构化列表数据（食堂菜单）
+> 验证 CR 在**非自然语言文本**上的局限性与优势。
+
+| 实验编号 | 方法 | 核心技术 | 适用数据 |
 |---|---|---|---|
-| **Phase 1** | Baseline RAG vs CR | 向量检索 + LLM 上下文增强 | 食堂菜单（结构化列表） |
-| **Phase 2（新）** | **Knowledge Graph** | **图谱推理 (LlamaIndex KG)** | **防洪预案（非结构化文档）** |
+| **Exp 1** | Baseline RAG | 向量检索 (bge-small-zh) + BM25 | 列表 (List) |
+| **Exp 2** | CR Enhanced | LLM 生成上下文前缀 + 向量 + BM25 | 列表 (List) |
+| **Exp 3** | Jieba + Simple KG | 结巴分词 + NetworkX 简单图谱 | 列表 (List) |
+
+### 第二阶段：非结构化领域数据（防洪预案）
+> 验证 CR 和 KG 在**垂直领域复杂文本**上的推理能力。
+
+| 实验编号 | 方法 | 核心技术 | 适用数据 |
+|---|---|---|---|
+| **Exp 4** | CR (Flood) | 上下文检索 (针对长文档切片优化) | 文本 (Text) |
+| **Exp 5** | Deep Reasoning KG | LlamaIndex 深度知识图谱 + 递归检索 | 文本 (Text) |
 
 ---
 
