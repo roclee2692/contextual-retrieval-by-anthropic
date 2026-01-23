@@ -6,7 +6,7 @@ load_dotenv()
 data_dir = os.getenv("DATA_DIR")
 save_dir = os.getenv("SAVE_DIR")
 collection_name = os.getenv("COLLECTION_NAME")
-db_name = "canteen_db"
+db_name = os.getenv("DB_NAME", "contextual_db") # Default fallback
 
 create_and_save_db(
     data_dir=data_dir, 

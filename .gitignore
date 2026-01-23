@@ -46,3 +46,11 @@ Thumbs.db
 # Temporary files
 *.tmp
 temp/
+src/db/flood_prevention_db_vectordb/
+src/db/flood_prevention_db_bm25/
+src/db/context_cache.json
+
+
+data/水利文件/
+data/防洪预案/
+

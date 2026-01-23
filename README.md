@@ -1,489 +1,136 @@
-# Contextual Retrieval on Structured Data: A Reproducible Experiment
-
-**[English](README.md) | [简体中文](README_CN.md)**
+# Contextual Retrieval & Knowledge Graph: Multi-Domain Experiments
+# 上下文检索与知识图谱：多领域对比实验
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Reproducible](https://img.shields.io/badge/reproducible-yes-green.svg)](https://github.com/roclee2692/contextual-retrieval-by-anthropic)
 
-> **Based on**: [Anthropic's Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval) | **Extended with**: Chinese dataset + comparative experiments + jieba tokenization + knowledge graph
-
----
-
-## ⚡ TL;DR
-
-**What**: Reproduced Anthropic's Contextual Retrieval on Chinese canteen menu data (270k chars) with 3 controlled experiments  
-**Best Result**: Jieba+KG achieved **10.13s avg response** (21% faster) with **19.9% hybrid retrieval speedup**  
-**Key Finding**: CR shows **double-edged effect** on structured data — +100% disambiguation accuracy but -100% on detail-heavy queries due to **lack of natural language context**
-
-### 📊 At-a-Glance Results
-
-| Experiment | Method | Avg Time | Overall Accuracy | Best Use Case |
-|-----------|--------|----------|-----------------|---------------|
-| **Exp 1** | Baseline RAG | 12.79s | 83.3% | Category queries (100%) |
-| **Exp 2** | CR Enhanced | 13.64s | **86.0%** ✅ | Price queries (100%), disambiguation |
-| **Exp 3** | Jieba + KG | **10.13s** ⚡ | 77.7% | Speed (21% faster than baseline) |
-
-**Winner**: CR improves accuracy by +3%, but **Jieba tokenization** brings the biggest speed gain (+21%)
+**[English](#english) | [中文](#chinese)**
 
 ---
 
-## 🔄 System Pipeline
+<a name="english"></a>
+## 🇬🇧 English Overview
 
-```mermaid
-graph LR
-    A[PDF Data<br/>270k chars] --> B[Text Chunking<br/>512 tokens]
-    B --> C{CR Enabled?}
-    C -->|Yes| D[LLM Context Gen<br/>gemma2:2b]
-    C -->|No| E[Original Chunks]
-    D --> F[Concat Context<br/>+ Original]
-    E --> G[Embedding<br/>bge-small-zh]
-    F --> G
-    G --> H[Vector DB<br/>ChromaDB]
-    B --> I{Jieba?}
-    I -->|Yes| J[Chinese Tokenize]
-    I -->|No| K[Default English]
-    J --> L[BM25 Index<br/>bm25s]
-    K --> L
-    M[User Query] --> N[Hybrid Retrieval<br/>Vector + BM25]
-    H --> N
-    L --> N
-    N --> O[Top-12 Chunks]
-    O --> P[LLM Answer<br/>gemma3:12b]
-    P --> Q[Final Answer]
-    
-    style D fill:#ffe6e6
-    style J fill:#e6f7ff
-    style Q fill:#e6ffe6
-```
+This repository demonstrates **Advanced RAG** techniques including **Contextual Retrieval (CR)** and **Knowledge Graphs (KG)** applied to structured and semi-structured data.  
+It solves the "loss of context" problem in traditional RAG by using LLMs to generate context for document chunks.
+
+This project now contains two distinct experiments (Datasets):
+
+1.  **Experiment A: Canteen Menus (Original)**
+    *   **Data**: 270k characters of structured canteen menu data.
+    *   **Focus**: Comparing Baseline RAG vs. CR vs. Jieba optimized BM25.
+    *   **Finding**: CR is great for disambiguation but can lose details in dense lists.
+2.  **Experiment B: Flood Prevention Plans (New)**
+    *   **Data**: Domain-specific government flood emergency plans.
+    *   **Focus**: **Knowledge Graph** construction for entity relationship reasoning (e.g., "Who commands the response?").
+    *   **Finding**: KG significantly improves reasoning on hierarchical organizational structures.
 
 ---
 
-## 🎯 What It Is
+<a name="chinese"></a>
+## 🇨🇳 中文介绍
 
-This project reproduces [Anthropic's Contextual Retrieval paper](https://www.anthropic.com/news/contextual-retrieval) with three comparative experiments in Chinese:
+本项目展示了 **高级 RAG** 技术，包括 **上下文检索 (Contextual Retrieval)** 和 **知识图谱 (Knowledge Graph)** 在不同数据类型上的应用。
+核心思想是利用 LLM 为文档切片生成背景上下文，解决传统 RAG 的“断章取义”问题。
 
-| Experiment | Method | Core Technologies |
-|-----------|--------|------------------|
-| **Exp 1** | Baseline RAG | Vector Retrieval (bge-small-zh) + BM25 |
-| **Exp 2** | CR Enhanced | LLM-generated context prefix + Vector+BM25 |
-| **Exp 3** | With Jieba + KG | Jieba Chinese tokenization + Knowledge Graph |
+本项目包含两个独立的实验（数据集）：
 
-**Test Dataset**: NCWU Longzihu Campus Canteen Menu (270k chars, 3 restaurants, 80+ stalls, 2000+ dishes)
+### 1. 实验 A：高校食堂菜单 (Original)
+*   **数据**：华北水利水电大学龙子湖校区食堂菜单（270k 字符，结构化列表）。
+*   **重点**：对比 Baseline RAG、CR 增强版以及 Jieba 分词优化的效果。
+*   **结论**：CR 在消除歧义（如“天津包子” vs “包子”）方面效果显著，但在密集列表数据的细节保留上存在挑战。
 
----
-
-## 📊 Key Results
-
-### Performance Comparison
-
-| Metric | Exp 1 (Baseline) | Exp 2 (CR) | Exp 3 (Jieba+KG) |
-|--------|-----------------|-----------|----------------|
-| **Avg Response Time** | 12.79s | 13.64s (+6.7%) | **10.13s** ⚡ |
-| **Hybrid Retrieval Speedup** | 9.9% | 8.5% | **19.9%** |
-| **Price Query Accuracy** | 75% | **100%** ✅ | **100%** ✅ |
-| **Category Query Accuracy** | **100%** ✅ | 83% | 83% |
-| **Location Query Accuracy** | 75% | **75%** | 50% |
-
-### Critical Findings
-
-#### ✅ CR Success Cases
-- **Q8 Tianjin Baozi Location**: Exp 1 (0%) → Exp 2 (**100%**) 
-  - CR successfully disambiguated "Tianjin Baozi" from "Hong Kong Jiulong Bao"
-
-#### ❌ CR Failure Cases
-- **Q9 Stall Name Query**: Exp 1 (100%) → Exp 2 (**0%**)
-  - Key information (stall names) lost during context generation
-
-#### ⚡ Jieba Tokenization Effect
-- Exp 3 hybrid retrieval speedup: **19.9%** (vs. 9.9% in Exp 1)
-- Fastest single response: **2.73s** (Q9)
+### 2. 实验 B：防洪应急预案 (New)
+*   **数据**：垂直领域的防洪应急预案文本（非结构化/半结构化）。
+*   **重点**：构建 **知识图谱** 解决实体关系推理问题（如“谁是防洪总指挥？”）。
+*   **结论**：知识图谱能精准捕捉组织架构和职责关系，弥补了纯向量检索在逻辑推理上的短板。
 
 ---
 
-## 🔍 Core Findings
+## 🚀 Usage / 使用指南
 
-### Why Does CR Underperform on Structured Data?
+### 🔧 Configuration / 配置切换
 
-**Root Cause**: Data lacks **natural language context**
+Since there are two datasets, we use `.env` files to switch configurations.
+由于有两个数据集，我们使用 `.env` 文件来切换配置。
 
-```
-❌ Our Data (Structured List):
-Tianjin Baozi: Fresh Meat Bun 2 yuan
-Hong Kong Jiulong Bao: Fresh Meat Bun 4 yuan/basket
-Canteen 1: Stall 19
-
-✅ CR's Designed Data (Natural Text):
-"Avatar 3's release sparked heated discussions. Many viewers found 
-the special effects stunning, though the plot somewhat thin. 
-A critic exclaimed: 'A visual feast!'"
-```
-
-**Key Differences**:
-- Structured data: Entity-Attribute-Value triples, **no sentiment, no rhetoric, no causality**
-- Natural text: Rich contextual information for CR to extract effective context
-
-### CR's Double-Edged Sword Effect
-
-| Query Type | Effect | Reason |
-|-----------|--------|--------|
-| Location (needs disambiguation) | ✅ +100% | CR successfully distinguishes similar entities |
-| Stall Name (needs complete info) | ❌ -100% | Information loss during LLM generation |
-| Category (needs detailed list) | ⚠️ -17% | Context compression causes detail loss |
-
----
-
-## 🚀 Quickstart (Copy & Run)
-
-### Prerequisites
-- Python 3.11+
-- [Ollama](https://ollama.com/download) installed
-- Your own PDF data (or use the canteen menu structure)
-
-### 1️⃣ Setup Environment (5 min)
-
+**For Canteen Experiment (Run Experiment A):**
+**运行食堂菜单实验：**
 ```bash
-# Clone and install
-git clone https://github.com/roclee2692/contextual-retrieval-by-anthropic.git
-cd contextual-retrieval-by-anthropic
-pip install -r requirements.txt
-
-# Download LLMs
-ollama pull gemma2:2b    # For context generation
-ollama pull gemma3:12b   # For Q&A
+# Windows (PowerShell)
+Copy-Item .env.canteen .env
 ```
 
-### 2️⃣ Prepare Data (2 min)
-
+**For Flood Experimen (Run Experiment B):**
+**运行防洪预案实验：**
 ```bash
-# Put your PDF in data/ folder
-mkdir -p data
-cp /path/to/your/document.pdf data/
+# Windows (PowerShell)
+Copy-Item .env.flood .env
 ```
 
-### 3️⃣ Run All 3 Experiments (30 min total)
+### 🏗️ Build & Run / 构建与运行
 
+#### Phase 1: Contextual Retrieval DB / 构建上下文数据库
+(Works for both experiments based on `.env`)
+（根据 `.env` 配置自动适配）
 ```bash
-# Experiment 1: Baseline RAG (10 min)
-python scripts/create_save_db.py          # Build vector+BM25 DB
-python scripts/test_ab_simple.py          # Run 20 test questions
-# → Results: results/report_experiment_1_RAG_Chunked.txt
-
-# Experiment 2: CR Enhanced (15 min - LLM generates context)
-# Edit src/contextual_retrieval/save_contextual_retrieval.py: enable_cr = True
 python scripts/create_save_db.py
-python scripts/test_ab_simple.py
-# → Results: results/report_experiment_2_CR_Prefixed.txt
-
-# Experiment 3: Jieba + KG (10 min + optional 40 min for KG)
-# Edit src/contextual_retrieval/save_bm25.py: use_jieba = True
-python scripts/create_save_db.py
-python scripts/create_knowledge_graph.py  # Optional
-python scripts/test_ab_simple.py
-# → Results: results/report_experiment_3_Jieba_KG.txt
 ```
 
-### 4️⃣ View Results (1 min)
-
+#### Phase 2: Knowledge Graph / 构建知识图谱
+(Currently optimized for Flood Prevention data)
+（目前主要针对防洪数据优化）
 ```bash
-# Summary table
-cat results/summary_table.csv
-
-# Detailed case analysis
-cat results/cases.md
-
-# Full comparison report (Chinese)
-cat docs/三个实验对比分析报告.md
+python scripts/create_knowledge_graph.py
 ```
 
-**Expected Output**: 3 experiment reports + 1 summary CSV + 10 case analyses showing CR's double-edged effect
-
----
-
-## 📁 Dataset
-
-### Data Source
-NCWU Longzihu Campus Canteen Menu PDF (public information)
-
-### Data Characteristics
-- **Text Length**: ~270,000 characters
-- **Structure**: 3 restaurants × 80+ stalls × 2000+ dishes
-- **Format**: List data (stall name - dish - price)
-
-### Data Example
-```
-[NCWU Longzihu | Canteen 1 | Floor 1 | Window 42]
-Five, Tianjin Baozi (Stall 21)
-2 yuan category
-- Signature Fresh Meat Bun, Spicy Chicken Bun, Preserved Vegetable Pork Bun...
-3 yuan category
-- Shrimp Bun, BBQ Pork Bun, Crab Roe Bun...
-```
-
-### Privacy Handling
-- ✅ Public information (canteen menu)
-- ✅ No personal sensitive information
-- ✅ Directly usable for research
-
----
-
-## 📏 Evaluation
-
-### Test Questions (20 total)
-Covering four query types:
-1. **Location Queries** (5): Stall locations, restaurant distribution
-2. **Price Queries** (4): Cheapest items, price comparison
-3. **Category Queries** (7): Dish types, stall distribution
-4. **Statistics Queries** (4): Stall counts, variety rankings
-
-### Evaluation Metrics
-- **Accuracy**: Whether answer contains correct information
-- **Response Time**: Time from query to answer generation
-- **Information Completeness**: Whether sufficient details provided
-
-### Judgment Rules
-- ✅ **Fully Correct**: Accurate and complete answer
-- ⚠️ **Partially Correct**: Answer has errors but direction correct
-- ❌ **Completely Wrong**: Incorrect answer or unable to respond
-
-### Annotation Process
-- **Annotator**: Single annotator (project author) with domain knowledge
-- **Consistency Check**: Cross-validated with ground truth from original PDF
-- **Output Constraints**: Answers must include location/price/category (or explicitly state "not available")
-- **Completeness Criteria**: Partial lists marked as incomplete if >50% items missing
-
-### Sample Questions
-```
-Q1: What stalls/windows are in Canteen 1?
-Q8: Which stall is Tianjin Baozi at? (tests disambiguation)
-Q15: Which stall has the most variety of baozi?
+#### Verification / 验证
+```bash
+# Flood Verification
+python scripts/test_kg_retrieval.py
 ```
 
 ---
 
-## 🔬 Methodology
+## 📂 Project Structure / 项目结构
 
-### Baseline RAG (Experiment 1)
 ```
-PDF → Text Chunking → Vectorization(bge-small-zh) → ChromaDB
-                          ↓
-Query → Vector Retrieval + BM25 Retrieval → Top-12 → LLM Answer
-```
-
-### Contextual Retrieval (Experiment 2)
-```
-PDF → Text Chunking → LLM Context Generation → Concat Original → Vector → ChromaDB
-                      ↓
-"NCWU Longzihu restaurant menu listing..."
-```
-
-### Jieba + KG (Experiment 3)
-```
-PDF → Jieba Tokenization → Vector + BM25(Chinese) → ChromaDB
-      ↓
-  Entity Extraction → Knowledge Graph(NetworkX)
+d:\DpanPython\python-projects\contextual-retrieval-by-anthropic
+├── .env                    # Current active config
+├── .env.canteen            # Config for Canteen Menu Experiment
+├── .env.flood              # Config for Flood Prevention Experiment
+├── data/
+│   ├── 防洪预案_txt/        # Data for Flood Exp
+│   └── (pdf files...)      # Data for Canteen Exp
+├── src/
+│   ├── db/                 # Database storage
+│   │   ├── canteen_db_*/           # DBs for Canteen
+│   │   ├── flood_prevention_db_*/  # DBs for Flood
+│   │   └── knowledge_graph/        # Shared/Generic KG store
+└── scripts/                # Build and Test scripts
 ```
 
 ---
 
-## 🎓 Research Value
+## 📊 Experiment A Results (Canteen) / 食堂实验结果
 
-### Academic Contributions
+| Method | Avg Time | Accuracy (Category) | Accuracy (Price) |
+|--------|----------|---------------------|------------------|
+| Baseline RAG | 12.79s | 100% | 75% |
+| **Contextual Retrieval** | 13.64s | 83% | **100%** |
+| **Jieba + KG** | **10.13s** | 83% | **100%** |
 
-#### 1. First Validation of CR on Chinese Structured Data
-- Quantified CR's double-edged effect (+100% / -100%)
-- Revealed data type's impact on RAG algorithms
-
-#### 2. Jieba Tokenization's Effect on BM25
-```
-Without jieba: 9.9% hybrid retrieval speedup
-With jieba: 19.9% hybrid retrieval speedup (+101% improvement)
-```
-
-#### 3. Clarified RAG's Applicable Boundaries
-- ✅ Suitable: Natural language text (reviews, articles, conversations)
-- ❌ Unsuitable: Structured lists (menus, price lists, databases)
-
-### Paper Direction Suggestions
-> **"Adaptive Research on Contextual Retrieval in Chinese RAG Systems"**  
-> or  
-> **"Why Contextual Retrieval Struggles on Structured List Data"**
+> **Insight**: CR shows **double-edged effect** on structured data — +100% disambiguation accuracy but -100% on detail-heavy queries due to **lack of natural language context**.
+> **洞察**：CR 在结构化数据上是一把双刃剑——它能 100% 消除歧义，但因为重写过程丢失了原有格式，导致密集细节查询准确率下降。
 
 ---
 
-## ⚠️ Limitations
+## 📊 Experiment B Results (Flood) / 防洪实验结果
 
-### Current Limitations
+*Detailed report available in `results/flood_comparison_report.md`*
+*详细报告见 `results/flood_comparison_report.md`*
 
-1. **Single Data Type**
-   - Only tested canteen menu (structured list)
-   - Lacks comparison with natural language text (news, reviews)
-
-2. **Missing Reranking**
-   - Anthropic paper shows Reranking can improve 20-30% accuracy
-   - This project doesn't implement bge-reranker-v2-m3
-
-3. **Limited Test Questions**
-   - Only 20 questions, limited coverage
-   - Lacks automated evaluation framework
-
-4. **LLM Capacity Limitation**
-   - gemma2:2b may lose information during context generation
-   - Larger models (like qwen2.5:14b) might improve
-
-### Why Results Are "Average"
-
-**Not an algorithm problem, but a data problem**:
-- CR designed for **natural language text**
-- Canteen menu is **structured list**
-- Lack of context leads to poor context generation quality
-
----
-
-## 🗺️ Next Steps & Roadmap
-
-### 🎯 Immediate TODOs (High Impact, 1-2 weeks)
-
-- [ ] **Switch to Natural Language Dataset** (addresses core limitation)
-  - Target: 200-500 Chinese movie reviews (Douban) or Q&A pairs (Zhihu)
-  - Hypothesis: CR will show +20-30% accuracy gain on context-rich data
-  - Deliverable: Comparative report (structured vs natural language)
-
-- [ ] **Add Reranking Layer** ([Anthropic paper reports 20-30% boost](https://www.anthropic.com/news/contextual-retrieval))
-  - Implement: `bge-reranker-v2-m3` as post-retrieval step
-  - Expected: Reduce false positives in top-K results
-  - Effort: ~3 days (LlamaIndex has built-in support)
-
-- [ ] **Automated Evaluation Pipeline**
-  - Scale: 20 questions → 100 questions with auto-scoring
-  - Tools: GPT-4 as judge + F1/ROUGE metrics
-  - Reproducibility: Versioned test sets + CI/CD integration
-
-### 🚀 Mid-term Plans (1 month)
-
-- [ ] **Standard Chinese Benchmarks**: DuReader, CMRC 2018
-- [ ] **Dynamic CR Strategy**: Enable/disable CR based on query type detection
-- [ ] **Multilingual Comparison**: Validate if CR works better in English than Chinese
-
-### 🌟 Long-term Vision
-
-- [ ] **Academic Publication**: "When Does Contextual Retrieval Work? A Study on Data Type Boundaries"
-- [ ] **Open Source Contribution**: Submit Chinese tokenization PR to LlamaIndex
-- [ ] **Production Deployment**: Real-world RAG system with adaptive CR
-
----
-
-## 📂 Project Structure
-
-```
-contextual-retrieval-by-anthropic/
-│
-├── 📄 README.md                      ⭐ Main documentation (English)
-├── 📄 README_CN.md                   📋 Chinese documentation
-├── 📄 LICENSE                        MIT License
-├── 📄 requirements.txt               Python dependencies
-├── 📄 .gitignore                     Git ignore rules
-│
-├── 📁 data/                          Data directory
-│   ├── README.md                     📋 Data description & limitations
-│   └── *.pdf                         Raw PDF data (not in Git)
-│
-├── 📁 src/                           Core source code
-│   ├── contextual_retrieval/         CR implementation
-│   │   ├── save_vectordb.py         Vector database creation
-│   │   ├── save_bm25.py             BM25 index (with jieba)
-│   │   └── save_contextual_retrieval.py  CR context generation
-│   ├── db/                           Database files (not in Git)
-│   └── tools/
-│       └── rag_workflow.py          RAG workflow
-│
-├── 📁 scripts/                       🔧 Run scripts
-│   ├── create_save_db.py            Create database (Exp 1/3)
-│   ├── test_ab_simple.py            🧪 A/B test script (core)
-│   ├── create_knowledge_graph.py    Build knowledge graph
-│   └── visualize_kg.py              KG visualization
-│
-├── 📁 results/                       ⭐ Experiment results
-│   ├── summary_table.csv            📊 Summary table
-│   ├── cases.md                     📝 10 typical case analyses
-│   ├── report_experiment_1_RAG_Chunked.txt     Exp 1 results
-│   ├── report_experiment_2_CR_Prefixed.txt     Exp 2 results
-│   └── report_experiment_3_Jieba_KG.txt        Exp 3 results
-│
-├── 📁 docs/                          📚 Detailed documentation
-│   ├── 三个实验对比分析报告.md        📈 Full comparison (Chinese)
-│   ├── 改进方案.md                   🚀 Improvement plan (Chinese)
-│   └── 发布清单.md                   ✅ Publish checklist (Chinese)
-│
-└── 📁 img/                           Image resources
-    └── *.png                         Screenshots, charts
-
-```
-
-### 🎯 Quick Navigation
-
-| Want to... | Go to | Time |
-|-----------|-------|------|
-| 📖 Understand project | [README.md](README.md) ← Current | 5 min |
-| 🔍 View key findings | [results/cases.md](results/cases.md) | 10 min |
-| 🚀 Run experiments | [scripts/test_ab_simple.py](scripts/test_ab_simple.py) | 30 min |
-| 📊 Deep analysis | [docs/三个实验对比分析报告.md](docs/三个实验对比分析报告.md) | 20 min |
-| 💾 Data description | [data/README.md](data/README.md) | 3 min |
-| 📢 Publish guide | [docs/发布清单.md](docs/发布清单.md) | 15 min |
-
-**Project Streamlining Stats**:
-- ✅ Core files: 30
-- 🗑️ Deleted: 40+ redundant files
-- 📉 Size reduction: 60%
-- 📁 Structure clarity: +300%
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! If you have improvement suggestions:
-
-1. Fork this repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under MIT License - see [LICENSE](LICENSE) file for details
-
----
-
-## 🙏 Acknowledgments
-
-- [Anthropic](https://www.anthropic.com/) - Contextual Retrieval paper
-- [LlamaIndex](https://www.llamaindex.ai/) - RAG framework
-- [Ollama](https://ollama.com/) - Local LLM serving
-- [jieba](https://github.com/fxsjy/jieba) - Chinese word segmentation
-
----
-
-## 📧 Contact
-
-**Author**: roclee2692  
-**GitHub**: [@roclee2692](https://github.com/roclee2692)
-
-**If this project helps you, please give it a ⭐️ Star!**
-
----
-
-## 📚 Citation
-
-If you use this project in your research, please cite:
-
-```bibtex
-@software{contextual_retrieval_structured_data,
-  author = {roclee2692},
-  title = {Contextual Retrieval on Structured Data: A Reproducible Experiment},
-  year = {2026},
-  url = {https://github.com/roclee2692/contextual-retrieval-by-anthropic}
-}
-```
+*   **Contextual Retrieval** significantly outperforms Baseline RAG in finding specific procedural details.
+*   **Knowledge Graph** successfully mapped entity relationships (Commander -> Role -> Responsibilities).
+*   **CR** 在查找具体流程细节方面显著优于 Baseline RAG。
+*   **知识图谱** 成功映射了实体关系（指挥官 -> 角色 -> 职责）。
