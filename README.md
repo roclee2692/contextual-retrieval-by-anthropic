@@ -59,7 +59,7 @@ graph LR
     F --> G
     G --> H[Vector DB<br/>ChromaDB]
     B --> I{Jieba?}
-    I -->|Yes| J[Chinese Tokenize<br/>(Exp 1-3)]
+    I -->|Yes| J["Chinese Tokenize<br/>(Exp 1-3)"]
     I -->|No| K[Default English]
     J --> L[BM25 Index]
     K --> L
