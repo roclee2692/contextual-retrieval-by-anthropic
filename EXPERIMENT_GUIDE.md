@@ -12,8 +12,9 @@
 - **Exp 3**: Jieba + Simple KG  
 
 ### Phase 2: 非结构化领域数据（防洪预案）
-- **Exp 4**: CR (Flood Domain)  
-- **Exp 5**: Deep Knowledge Graph  
+- **Exp 4**: Baseline (Flood) - 纯 RAG 无 CR
+- **Exp 5**: CR (Flood) - 带上下文的 RAG
+- **Exp 6**: Deep Knowledge Graph - 知识图谱推理  
 
 ---
 
@@ -32,13 +33,15 @@ python run_experiment.py canteen --test
 
 ### 运行 Phase 2（防洪实验）
 ```bash
-# 运行对比测试
+# Exp 4 & 5: 运行 Baseline vs CR 对比测试
 python run_experiment.py flood --test
 
-# 构建知识图谱（独立脚本，耗时约 30-40 分钟）
+# Exp 6: 构建知识图谱（独立脚本，耗时约 30-40 分钟）
 python scripts/create_knowledge_graph.py
 python scripts/test_kg_retrieval.py
 ```
+
+> **注意**: `run_flood_comparison.py` 会自动对比 Baseline 和 CR 两种方法，无需单独运行 Baseline。
 
 ---
 

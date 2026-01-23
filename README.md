@@ -28,21 +28,29 @@
 
 ---
 
-## 🆕 Phase 2 Extension: Flood Prevention & Knowledge Graph
+## 🆕 Phase 2 Extension: Flood Prevention (3 Experiments)
 
-Building on the findings from the "Structured List Data" (Canteen Exp), we extended the project to a **Domain Specific Unstructured/Semi-structured Data** scenario: **Flood Prevention Plans**.
+Building on Phase 1 findings, we conducted a **complete three-way comparison** on flood prevention domain data.
 
-> **Note**: To switch between experiments, use the configuration files:
-> - Canteen Exp: `Copy-Item .env.canteen .env`
-> - Flood Exp: `Copy-Item .env.flood .env`
+*Detailed report: `results/flood_comparison_report.md`*
+
+### Experiment Design
+| Experiment | Description | Script |
+|---|---|---|
+| **Exp 4: Baseline** | Pure Vector+BM25 (No CR) | `run_flood_comparison.py` |
+| **Exp 5: CR Enhanced** | Context-augmented retrieval | `run_flood_comparison.py` |
+| **Exp 6: Deep KG** | Knowledge Graph reasoning | `create_knowledge_graph.py` + `test_kg_retrieval.py` |
 
 ### Key Results from Phase 2 (Flood Dataset)
 
-*Detailed report available in `results/flood_comparison_report.md`*
+1.  **CR Performance on Long Documents**:
+    *   CR significantly outperforms Baseline on documents with **clear contextual clues**.
+    *   Contrasts with Phase 1 (list data), validating CR's **data type dependency**.
 
-*   **Contextual Retrieval** significantly outperforms Baseline RAG in finding specific procedural details.
-*   **Knowledge Graph (KG)** successfully mapped **600+ entities** (Commander -> Role -> Responsibilities), solving the reasoning gap found in the Canteen experiment.
-*   **Reasoning Capability**: The KG allows for multi-hop queries like "Who is responsible for the reservoir overflow trigger?" which pure vector search struggles with.
+2.  **Knowledge Graph Advantages**:
+    *   Successfully mapped **600+ entities** (Commander → Role → Responsibilities).
+    *   Solves **multi-hop reasoning** problems that pure vector search struggles with.
+    *   *Example*: "Who commands the response?" → KG traverses `Command → Role → Trigger` path for precise answers.
 
 ---
 
@@ -67,9 +75,9 @@ graph LR
     H --> N
     L --> N
     
-    subgraph Phase 2: Knowledge Graph
+    subgraph "Phase 2: Knowledge Graph"
     B --> O[Entity Extraction]
-    O --> P[Graph Store<br/>Structure]
+    O --> P[Graph Store]
     P --> Q[Graph Query]
     Q -.-> N
     end
@@ -86,7 +94,9 @@ This project reproduces [Anthropic's Contextual Retrieval paper](https://www.ant
 | **Exp 1** | Baseline RAG | Vector Retrieval (bge-small-zh) + BM25 | Canteen (List) |
 | **Exp 2** | CR Enhanced | LLM-generated context prefix + Vector+BM25 | Canteen (List) |
 | **Exp 3** | With Jieba + KG | Jieba Chinese tokenization + Knowledge Graph | Canteen (List) |
-| **Exp 4 (New)** | **Flood Domain KG** | Domain-specific Schema + Deep Reasoning | **Flood Plans (Text)** |
+| **Exp 4** | Baseline (Flood) | Vector + BM25 (No Context) | Flood Plans (Text) |
+| **Exp 5** | CR (Flood) | Context Retrieval (LLM prefixes) | Flood Plans (Text) |
+| **Exp 6** | Deep KG (Flood) | LlamaIndex Graph + Reasoning | Flood Plans (Text) |
 
 ---
 
