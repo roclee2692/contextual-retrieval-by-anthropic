@@ -98,33 +98,47 @@ graph LR
 
 ## 🚀 快速开始
 
-### 1. 环境安装
+### 环境准备
+- Python 3.11+
+- [Ollama](https://ollama.com/download) 已安装
+- `gemma3:12b` (问答) 和 `gemma2:2b` (上下文生成)
+
+### 1. 安装依赖
 ```bash
 git clone https://github.com/roclee2692/contextual-retrieval-by-anthropic.git
 cd contextual-retrieval-by-anthropic
 pip install -r requirements.txt
 ```
 
-### 2. 运行 Phase 1: 食堂实验 (Original)
-```bash
-# 切换配置
-Copy-Item .env.canteen .env
+### 2. 运行实验（统一脚本）
 
-# 构建数据库与运行测试
-python scripts/create_save_db.py
-python scripts/test_ab_simple.py
+**方式 A: 食堂实验 (Phase 1)**
+```bash
+# 一键切换配置 + 构建数据库 + 运行测试
+python run_experiment.py canteen --build --test
 ```
 
-### 3. 运行 Phase 2: 防洪实验 (New KG)
+**方式 B: 防洪实验 (Phase 2)**
 ```bash
-# 切换配置
-Copy-Item .env.flood .env
+# 切换并运行对比测试
+python run_experiment.py flood --test
 
-# 构建知识图谱（需连接 Ollama）
+# 或构建知识图谱（耗时较长）
 python scripts/create_knowledge_graph.py
-
-# 验证图谱检索
 python scripts/test_kg_retrieval.py
+```
+
+**手动模式（高级）**
+```bash
+# 步骤 1: 手动切换配置
+Copy-Item .env.canteen .env  # 或 .env.flood
+
+# 步骤 2: 构建数据库
+python scripts/create_save_db.py
+
+# 步骤 3: 运行测试
+python scripts/test_ab_simple.py  # 食堂实验
+python scripts/run_flood_comparison.py  # 防洪实验
 ```
 
 ---

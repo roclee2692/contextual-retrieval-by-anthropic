@@ -129,28 +129,35 @@ cd contextual-retrieval-by-anthropic
 pip install -r requirements.txt
 ```
 
-### 2️⃣ Run Canteen Experiment (Original)
+### 2️⃣ Run Experiments (Unified Script)
 
+**Option A: Canteen Experiment (Original Phase 1)**
 ```bash
-# Switch Config
-Copy-Item .env.canteen .env
-
-# Run
-python scripts/create_save_db.py
-python scripts/test_ab_simple.py
+# Switch config, build DB, and run test - all in one command
+python run_experiment.py canteen --build --test
 ```
 
-### 3️⃣ Run Flood Experiment (New Phase 2)
-
+**Option B: Flood Experiment (New Phase 2)**
 ```bash
-# Switch Config
-Copy-Item .env.flood .env
+# Switch config and run comparison
+python run_experiment.py flood --test
 
-# Run KG Construction (Time consuming!)
+# Or build Knowledge Graph (time consuming)
 python scripts/create_knowledge_graph.py
-
-# Verify Reasoning
 python scripts/test_kg_retrieval.py
+```
+
+**Manual Mode (Advanced)**
+```bash
+# Step 1: Switch config manually
+Copy-Item .env.canteen .env  # Or .env.flood
+
+# Step 2: Build database
+python scripts/create_save_db.py
+
+# Step 3: Run test
+python scripts/test_ab_simple.py  # For canteen
+python scripts/run_flood_comparison.py  # For flood
 ```
 
 ---

@@ -1,0 +1,224 @@
+================================================================================
+向量检索 vs 混合检索 A/B 对比测试报告
+================================================================================
+
+
+问题 1: 一号餐厅有哪些窗口或档口？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 24.42s)
+One of the windows or stalls at the Number One restaurant is Window 14.
+
+【方法 B: 混合检索】 (耗时: 7.42s)
+There is a window 14 at the first restaurant. Additionally, there is a stall numbered 13/14.
+
+================================================================================
+
+问题 2: 二号餐厅一楼有哪些档口？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 9.82s)
+The following are listed as being located in 二号餐厅一楼: Window 10, Window 4, Window 30, Window 29, and Window 3.
+
+【方法 B: 混合检索】 (耗时: 10.23s)
+The following are located in the 二号餐厅一楼: Window 10, Window 4, Window 30, Window 29, and Window 3.
+
+================================================================================
+
+问题 3: 哪些窗口提供包子类食品？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 21.02s)
+Window 42 offers several types of steamed buns, including fresh meat buns, corn and fresh meat buns, shiitake and fresh meat buns, preserved plum pork buns, Orleans chicken buns, vermicelli and meat buns, chives and egg buns, three fresh tofu buns, green pepper and ham buns, cabbage and shiitake buns, three fresh eggplant buns, and fancy steamed dumplings. Additionally, there are meat buns and vegetable buns available.
+
+【方法 B: 混合检索】 (耗时: 21.74s)
+The stalls at window 42 offer several types of steamed buns, including fresh meat buns, corn and fresh meat buns, shiitake and fresh meat buns, Chinese sausage and pork belly buns, Orleans chicken buns, vermicelli and meat buns, chives and egg buns, three fresh tofu buns, green pepper and ham buns, cabbage and shiitake buns, three fresh eggplant buns, and fancy steamed dumplings. Additionally, there are meat buns and vegetarian buns available.
+
+================================================================================
+
+问题 4: 2元可以买到哪些食品？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 21.67s)
+腊肠和狮子头可以购买。椰奶、豆奶、小米南瓜粥、红豆沙、黑米粥、燕麦粥、黑米椰奶、黑米粥（重复项，按标价）、八宝粥、绿豆沙粥、燕麦椰奶、酸梅汤、红枣桂圆银耳、紫薯燕麦粥和皮蛋瘦肉粥也是。
+
+【方法 B: 混合检索】 (耗时: 21.99s)
+The following food items are available for 2 yuan:腊肠, 狮子头, 椰奶, 豆奶, 小米南瓜粥, 红豆沙, 黑米粥, 八宝粥, 绿豆粥, 燕麦粥, 黑米椰奶, 酸梅汤, 红枣桂圆银耳, 紫薯燕麦粥, 皮蛋瘦肉粥, 黑芝麻糊.
+
+================================================================================
+
+问题 5: 5元以下有什么早餐选择？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 12.91s)
+Five yuan or less, options include: oil cakes, beef hu la soup, vegetable hu la soup, tofu brain, vegetable steamed buns, meat steamed buns, vegetable buns, oil steamed buns, tea eggs, and dim sum.
+
+【方法 B: 混合检索】 (耗时: 18.54s)
+Several breakfast options are available for 5 yuan or less, including oil cakes, beef hu la soup, vegetarian hu la soup, tofu brain, vegetable dumplings, meat dumplings, vegetarian dumplings, meat pies, vegetarian pies, sesame pancakes, corn, large steamed buns (meat filling), large steamed buns (vegetable filling), tea eggs, and soy milk.
+
+================================================================================
+
+问题 6: 一号餐厅最便宜的粥是多少钱？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 5.79s)
+The cheapest porridge at the one restaurant costs 2 yuan per cup.
+
+【方法 B: 混合检索】 (耗时: 5.59s)
+The least expensive porridge is 2 yuan per cup.
+
+================================================================================
+
+问题 7: 我爱我粥在哪个餐厅的哪个窗口？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 5.35s)
+我爱我粥在位于一号餐厅的19号档口。
+
+【方法 B: 混合检索】 (耗时: 5.20s)
+我爱我粥位于一号餐厅的19号窗口。
+
+================================================================================
+
+问题 8: 天津包子档口在几号窗口？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 4.66s)
+The Tianjin baozi stall is located at window number 42.
+
+【方法 B: 混合检索】 (耗时: 3.22s)
+The Tianjin baozi stall is located at window number 42.
+
+================================================================================
+
+问题 9: 二号餐厅10号窗口是什么档口？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 4.46s)
+二十、民族风味（10号）
+
+【方法 B: 混合检索】 (耗时: 6.17s)
+The text mentions "二十、民族风味（10号）" for the 二号餐厅.
+
+================================================================================
+
+问题 10: 早餐想喝粥，有哪些选择？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 11.68s)
+There are several porridge options available, including black sticky rice porridge, millet pumpkin porridge, green bean porridge, golden corn porridge, coconut oatmeal porridge, black sticky rice and coconut milk porridge, and eight-treasure porridge.
+
+【方法 B: 混合检索】 (耗时: 10.29s)
+There are several porridge options available, including black rice porridge, millet pumpkin porridge, green bean porridge, golden corn porridge, coconut oat porridge, black rice coconut milk porridge, and assorted porridge.
+
+================================================================================
+
+问题 11: 哪里可以买到手工水饺？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 7.89s)
+手工水饺可以在一号餐厅的刘记，36号档口以及二号餐厅的25号购买。
+
+【方法 B: 混合检索】 (耗时: 7.79s)
+手工水饺可以在一号餐厅的刘记，36号档口以及二号餐厅的25号购买。
+
+================================================================================
+
+问题 12: 想吃面条，有哪些窗口？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 7.92s)
+面条可以在一号餐厅的窗口四、五、八、十六、十七、十八以及二号餐厅购买。
+
+【方法 B: 混合检索】 (耗时: 8.76s)
+面条可以在一号餐厅的窗口4、5、16、18、26和27找到，以及二号餐厅。
+
+================================================================================
+
+问题 13: 民族风味在哪个食堂？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 5.42s)
+The 民族餐厅 is located in the NCWU Longzihu area.
+
+【方法 B: 混合检索】 (耗时: 5.68s)
+The 民族餐厅 is located in the NCWU Longzihu area.
+
+================================================================================
+
+问题 14: 有哪些窗口提供烧腊类食品？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 5.08s)
+烧腊类食品在Window 22提供。
+
+【方法 B: 混合检索】 (耗时: 4.63s)
+Window 22 provides烧腊类食品.
+
+================================================================================
+
+问题 15: 哪个档口的包子种类最多？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 19.15s)
+一号餐厅（42号档口）提供多种包子，包括鲜肉包、玉米鲜肉包、香菇鲜肉包、梅菜扣肉包、奥尔良鸡肉包、酱肉粉条包、韭菜鸡蛋包、三鲜豆腐包、青椒火腿包、香菇包菜包、三鲜茄子包和花式蒸饺。
+
+【方法 B: 混合检索】 (耗时: 18.91s)
+一号餐厅（42号档口）提供多种包子，包括鲜肉包、玉米鲜肉包、香菇鲜肉包、梅菜扣肉包、奥尔良鸡肉包、酱肉粉条包、韭菜鸡蛋包、三鲜豆腐包、青椒火腿包、香菇包菜包、三鲜茄子包和花式蒸饺。
+
+================================================================================
+
+问题 16: 一号餐厅有哪些2元的粥？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 11.80s)
+The following porridge and drinks are available for 2 yuan a cup at the first restaurant: millet pumpkin porridge, clear fire green bean porridge, purple sweet potato black rice porridge, original soy milk, freshly ground soy milk, and red date mountain medicine porridge.
+
+【方法 B: 混合检索】 (耗时: 13.82s)
+小小米南瓜粥、清火绿豆粥、紫薯黑米粥、原味豆浆、现磨豆浆、牛奶燕麦粥、古法/宝粥、红枣山药粥、米酒小汤圆 are available for 2 yuan at the first restaurant.
+
+================================================================================
+
+问题 17: 二号餐厅哪些窗口有1.5元的食品？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 6.78s)
+The 1.5 yuan items are available at Window 29 and also listed generally for the restaurant.
+
+【方法 B: 混合检索】 (耗时: 9.92s)
+The 1.5元品类 includes five-spice tea eggs and is located at Window 29 and also in the general area of the 二号餐厅 on the first floor.
+
+================================================================================
+
+问题 18: 我爱我粥都卖什么？价格是多少？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 21.80s)
+我爱我粥提供小米南瓜粥、清火绿豆粥、紫薯黑米粥、原味豆浆、现磨豆浆、牛奶燕麦粥、古法/宝粥、红枣山药粥、米酒小汤圆、皮蛋瘦肉粥、老式鸡蛋汤、海南椰奶、红枣银耳汤、绿豆沙。这些粥品和饮品的单价在2元到3元之间。
+
+【方法 B: 混合检索】 (耗时: 21.65s)
+我爱我粥提供小米南瓜粥、清火绿豆粥、紫薯黑米粥、原味豆浆、现磨豆浆、牛奶燕麦粥、古法/宝粥、红枣山药粥、米酒小汤圆、皮蛋瘦肉粥、老式鸡蛋汤、海南椰奶、红枣银耳汤、绿豆沙。这些粥品和饮品的價格在2元到3元之间。
+
+================================================================================
+
+问题 19: 天津包子和香港九龙包，哪个更便宜？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 10.78s)
+天津包子的2元品类，例如招牌鲜肉包、辣子鸡丁包，而香港九龙包的品类价格为4元/笼。因此，天津包子更便宜。
+
+【方法 B: 混合检索】 (耗时: 10.43s)
+天津包子的2元品类，例如招牌鲜肉包、辣子鸡丁包等，而香港九龙包的价格是4元/笼。因此，天津包子更便宜。
+
+================================================================================
+
+问题 20: 一号餐厅和二号餐厅，哪个档口更多？
+--------------------------------------------------------------------------------
+
+【方法 A: 向量检索】 (耗时: 8.45s)
+The provided information details menus and prices for NCWU Longzihu 二号餐厅. It also mentions NCWU Longzihu 一号餐厅.
+
+【方法 B: 混合检索】 (耗时: 6.16s)
+The context details numerous offerings from both the one and two numbered restaurants.
+
+================================================================================
