@@ -1,3 +1,14 @@
+
+import sys
+from unittest.mock import MagicMock
+
+# Windows compatibility patch: mock 'resource' module if missing
+if sys.platform == 'win32' and 'resource' not in sys.modules:
+    try:
+        import resource
+    except ImportError:
+        sys.modules['resource'] = MagicMock()
+
 from src.contextual_retrieval import create_and_save_db
 import os
 from dotenv import load_dotenv

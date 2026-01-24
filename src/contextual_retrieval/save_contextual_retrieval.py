@@ -4,6 +4,9 @@ from llama_index.llms.ollama import Ollama
 from .save_vectordb import save_chromadb
 from .save_bm25 import save_BM25
 import os
+import json
+import hashlib
+from collections import defaultdict
 
 def create_and_save_db(
         data_dir: str, 
@@ -37,12 +40,18 @@ def create_and_save_db(
         )
 
     # Reading documents
+    print(f"Loading documents from {DATA_DIR}...")
     reader = SimpleDirectoryReader(input_dir=DATA_DIR)
     documents = reader.load_data()
+    
+    # Group documents by file_path to handle context correctly
+    docs_by_file = defaultdict(list)
+    for doc in documents:
+        # Fallback to 'unknown' if metadata is missing
+        file_path = doc.metadata.get('file_path', 'unknown_file')
+        docs_by_file[file_path].append(doc)
 
-    original_document_content = ""
-    for page in documents:
-        original_document_content += page.text
+    print(f"Loaded {len(documents)} pages from {len(docs_by_file)} files.")
 
     # Initializing text splitter
     splitter = TokenTextSplitter(
@@ -50,9 +59,6 @@ def create_and_save_db(
         chunk_overlap=CHUNK_OVERLAP,
         separator=" ",
     )
-
-    # Splitting documents to Nodes [text chunks]
-    nodes = splitter.get_nodes_from_documents(documents)
 
     # Template referred from Anthropic Blog Post
     template = """
@@ -67,87 +73,85 @@ def create_and_save_db(
             Answer only with the succinct context and nothing else. 
             """
 
-    # Contextual Retrieval : Providing context to existing Nodes [text chunks]
-    if llm:
-        import hashlib
-        import json
-        
-        # 缓存文件路径
-        cache_file = os.path.join(save_dir, "context_cache.json")
-        context_cache = {}
-        
-        # 加载已有缓存
-        if os.path.exists(cache_file):
-            print(f"Loading existing context cache from {cache_file}...")
-            try:
-                with open(cache_file, 'r', encoding='utf-8') as f:
-                    context_cache = json.load(f)
-                print(f"Loaded {len(context_cache)} cached items.")
-            except Exception as e:
-                print(f"Error loading cache: {e}")
+    # Setup Cache if LLM is active
+    context_cache = {}
+    cache_file = os.path.join(save_dir, "context_cache.json")
+    
+    if llm and os.path.exists(cache_file):
+        print(f"Loading existing context cache from {cache_file}...")
+        try:
+            with open(cache_file, 'r', encoding='utf-8') as f:
+                context_cache = json.load(f)
+            print(f"Loaded {len(context_cache)} cached items.")
+        except Exception as e:
+            print(f"Error loading cache: {e}")
 
-        idx = 0
-        nodes_count = len(nodes)
+    all_nodes = []
+    
+    processed_files_count = 0
+    total_files = len(docs_by_file)
+    
+    # Process each file individually
+    for file_path, file_docs in docs_by_file.items():
+        processed_files_count += 1
+        file_name = os.path.basename(file_path)
         
-        for i, node in enumerate(nodes):
-            content_body = node.text    
-            
-            # 使用内容哈希作为Key，确保稳定性
-            content_hash = hashlib.md5(content_body.encode('utf-8')).hexdigest()
-
-            if content_hash in context_cache:
-                # 命中缓存
-                print(f"[{i+1}/{nodes_count}] Using cached context for chunk.")
-                contextual_text = context_cache[content_hash]
-                node.text = contextual_text
-            else:
-                # 调用LLM
-                print(f"[{i+1}/{nodes_count}] Generating context with LLM...")
-                prompt = template.format(WHOLE_DOCUMENT=original_document_content, 
-                                        CHUNK_CONTENT=content_body)
+        # Construct WHOLE DOCUMENT context from this file only
+        file_content = "\n".join([d.text for d in file_docs])
+        
+        # Split this file into nodes
+        file_nodes = splitter.get_nodes_from_documents(file_docs)
+        print(f"File [{processed_files_count}/{total_files}]: {file_name} -> {len(file_nodes)} chunks")
+        
+        if llm:
+            for i, node in enumerate(file_nodes):
+                content_body = node.text
+                content_hash = hashlib.md5(content_body.encode('utf-8')).hexdigest()
                 
-                try:
-                    llm_response = llm.complete(prompt)
-                    # 组合结果
-                    contextual_text = llm_response.text + content_body
+                if content_hash in context_cache:
+                    node.text = context_cache[content_hash]
+                    # print(f"  [Cache] Chunk {i+1}")
+                else:
+                    print(f"  [LLM] Generating context for chunk {i+1}/{len(file_nodes)}...")
+                    prompt = template.format(WHOLE_DOCUMENT=file_content, CHUNK_CONTENT=content_body)
                     
-                    # 更新节点
-                    node.text = contextual_text
-                    
-                    # 写入缓存
-                    context_cache[content_hash] = contextual_text
-                    
-                    # 实时打印（可选）
-                    print(f'Context response => {llm_response.text[:100]}...')
-                    
-                    # 每生成 5 个就保存一次文件，防止全盘丢失
-                    if i % 5 == 0:
-                        with open(cache_file, 'w', encoding='utf-8') as f:
-                            json.dump(context_cache, f, ensure_ascii=False, indent=2)
-                            
-                except Exception as e:
-                    print(f"Error generating context for chunk {i}: {e}")
-                    # 出错时跳过更新，保留原文本或处理异常
-                    pass
-            
-            idx += 1
-            
-        # 最后再保存一次缓存
+                    try:
+                        llm_response = llm.complete(prompt)
+                        # Ensure there is a separation between context and original content
+                        contextual_text = llm_response.text + "\n\n" + content_body 
+                        
+                        node.text = contextual_text
+                        context_cache[content_hash] = contextual_text
+                        
+                        # Save cache periodically
+                        if len(context_cache) % 10 == 0:
+                            with open(cache_file, 'w', encoding='utf-8') as f:
+                                json.dump(context_cache, f, ensure_ascii=False, indent=2)
+                                
+                    except Exception as e:
+                        print(f"  ❌ Error generating context: {e}")
+        
+        all_nodes.extend(file_nodes)
+
+    # Final Save Cache
+    if llm:
         with open(cache_file, 'w', encoding='utf-8') as f:
             json.dump(context_cache, f, ensure_ascii=False, indent=2)
-            
-    else:
-        print("SKIP_CONTEXT_LLM=1: 跳过LLM上下文生成，直接使用原始分块构建索引")
+
+    if not llm:
+        print("SKIP_CONTEXT_LLM=1: Used raw chunks without context.")
     
     vectordb_name = db_name + "_vectordb"
     bm25db_name = db_name + "_bm25"
     
     # Saving the Vector Database and BM25 Database
-    save_chromadb(nodes=nodes, 
+    print(f"Saving ChromaDB: {vectordb_name} with {len(all_nodes)} nodes...")
+    save_chromadb(nodes=all_nodes, 
                   save_dir=save_dir, 
                   db_name=vectordb_name, 
                   collection_name=collection_name)
     
-    save_BM25(nodes=nodes, 
+    print(f"Saving BM25: {bm25db_name}...")
+    save_BM25(nodes=all_nodes, 
               save_dir=save_dir, 
               db_name=bm25db_name)

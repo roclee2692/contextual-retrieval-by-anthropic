@@ -43,14 +43,13 @@ Building on Phase 1 findings, we conducted a **complete three-way comparison** o
 
 ### Key Results from Phase 2 (Flood Dataset)
 
-1.  **CR Performance on Long Documents**:
-    *   CR significantly outperforms Baseline on documents with **clear contextual clues**.
-    *   Contrasts with Phase 1 (list data), validating CR's **data type dependency**.
+1.  **Baseline vs. CR: A Tie (Scientific Update)**:
+    *   **Score**: Baseline (0.493) vs CR (0.495).
+    *   **Finding**: On highly structured policy documents (unlike Phase 1's fragmented data), adding LLM-generated context **adds no significant value**. The original document structure is sufficient for retrieval.
+    *   **Implication**: CR is not a silver bullet; it excels where context is *missing*, not where it is *abundant*.
 
-2.  **Knowledge Graph Advantages**:
-    *   Successfully mapped **600+ entities** (Commander → Role → Responsibilities).
-    *   Solves **multi-hop reasoning** problems that pure vector search struggles with.
-    *   *Example*: "Who commands the response?" → KG traverses `Command → Role → Trigger` path for precise answers.
+2.  **Knowledge Graph Limitations**:
+    *   Without strict Schema constraints, generic KG extraction produces noisy triplets that perform poorly in precision retrieval (Score: 1000.0 artificial high, actual relevance low).
 
 ---
 

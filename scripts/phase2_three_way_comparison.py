@@ -76,27 +76,35 @@ class HybridRetriever(BaseRetriever):
         sorted_nodes = sorted(all_nodes.values(), key=lambda x: x.score if x.score else 0, reverse=True)
         return sorted_nodes[:10]
 
-def init_baseline_retriever(data_dir):
-    """初始化Baseline检索器 - 直接从原始文档构建"""
-    print("🔹 Baseline: 从原始文档构建临时索引...")
+def init_baseline_retriever(db_path, bm25_path, collection_name):
+    """初始化Baseline检索器 - 从预构建的数据库加载（与CR采用相同架构）"""
+    print("🔹 Baseline: 从预构建数据库加载...")
     
     embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-zh-v1.5", device="cpu")
     
-    # 读取原始文档
-    documents = SimpleDirectoryReader(data_dir).load_data()
-    print(f"   加载了 {len(documents)} 个文档")
+    if not os.path.exists(db_path):
+        print(f"   ❌ 数据库不存在: {db_path}")
+        return None
     
-    # 构建向量索引
-    vector_index = VectorStoreIndex.from_documents(documents, embed_model=embed_model)
+    db = chromadb.PersistentClient(path=db_path)
+    try:
+        chroma_collection = db.get_collection(collection_name)
+    except:
+        print(f"   ❌ Collection 不存在: {collection_name}")
+        return None
+    
+    vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+    vector_index = VectorStoreIndex.from_vector_store(vector_store, embed_model=embed_model)
     vector_retriever = vector_index.as_retriever(similarity_top_k=5)
     
-    # 构建BM25索引
-    nodes = vector_index.docstore.docs.values()
-    bm25_retriever = BM25Retriever.from_defaults(
-        nodes=list(nodes),
-        similarity_top_k=5,
-        tokenizer=chinese_tokenizer
-    )
+    bm25_retriever = None
+    if os.path.exists(bm25_path):
+        print(f"   Using Jieba tokenizer for Baseline BM25 at {bm25_path}")
+        # Load without tokenizer arg (avoids bm25s error)
+        bm25_retriever = BM25Retriever.from_persist_dir(bm25_path)
+        # Manually inject tokenizer for Query processing
+        bm25_retriever._tokenizer = chinese_tokenizer
+        bm25_retriever._similarity_top_k = 5
     
     return HybridRetriever(vector_retriever, bm25_retriever)
 
@@ -123,7 +131,11 @@ def init_cr_retriever(db_path, bm25_path, collection_name):
     
     bm25_retriever = None
     if os.path.exists(bm25_path):
+        print(f"   Using Jieba tokenizer for CR BM25 at {bm25_path}")
+        # Load without tokenizer arg (avoids bm25s error)
         bm25_retriever = BM25Retriever.from_persist_dir(bm25_path)
+        # Manually inject tokenizer for Query processing
+        bm25_retriever._tokenizer = chinese_tokenizer
         bm25_retriever._similarity_top_k = 5
     
     return HybridRetriever(vector_retriever, bm25_retriever)
@@ -217,8 +229,8 @@ def generate_markdown_report(all_results, queries):
     md += "## 实验配置\n\n"
     md += "| 实验组 | 说明 | 数据来源 |\n"
     md += "|--------|------|----------|\n"
-    md += "| **Baseline** | 原始文档直接检索（向量+BM25） | 临时构建，无LLM增强 |\n"
-    md += "| **CR Enhanced** | 上下文增强检索 | 预构建数据库，含LLM生成的上下文 |\n"
+    md += "| **Baseline** | 原始文档直接检索（向量+BM25） | **预构建ChromaDB** (与CR相同架构) |\n"
+    md += "| **CR Enhanced** | 上下文增强检索 | **预构建ChromaDB**，含LLM生成的上下文 |\n"
     md += "| **Knowledge Graph** | 知识图谱推理检索 | 预构建KG，三元组+实体关系 |\n\n"
     
     md += "## 测试问题分类\n\n"
@@ -279,13 +291,22 @@ def main():
     
     # 配置
     DATA_DIR = os.getenv("DATA_DIR", "./data/防洪预案")
+    
+    # Baseline: 使用预构建的数据库（与CR相同架构）
+    BASELINE_VECTOR_DB = "./src/db/flood_prevention_db_baseline_vectordb"
+    BASELINE_BM25_DB = "./src/db/flood_prevention_db_baseline_bm25"
+    
+    # CR Enhanced
     CR_VECTOR_DB = "./src/db/flood_prevention_db_cr_vectordb"
     CR_BM25_DB = "./src/db/flood_prevention_db_cr_bm25"
+    
+    # Knowledge Graph
     KG_DIR = "./src/db/knowledge_graph"
+    
     COLLECTION_NAME = "flood_prevention_collection"
     
     # 初始化检索器
-    baseline_retriever = init_baseline_retriever(DATA_DIR)
+    baseline_retriever = init_baseline_retriever(BASELINE_VECTOR_DB, BASELINE_BM25_DB, COLLECTION_NAME)
     cr_retriever = init_cr_retriever(CR_VECTOR_DB, CR_BM25_DB, COLLECTION_NAME)
     kg_retriever = init_kg_retriever(KG_DIR)
     
