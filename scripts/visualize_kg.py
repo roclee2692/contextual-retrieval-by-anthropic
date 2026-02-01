@@ -3,12 +3,17 @@
 将食堂知识图谱可视化为网络图
 """
 import os
-from llama_index.core import StorageContext, load_index_from_storage
+import sys
+from llama_index.core import StorageContext, load_index_from_storage, Settings
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
 import warnings
 warnings.filterwarnings('ignore')
+
+# 禁用 LLM 和 Embedding，因为可视化只需要读取结构
+Settings.llm = None
+Settings.embed_model = None
 
 def visualize_knowledge_graph():
     """可视化知识图谱"""

@@ -50,7 +50,32 @@ src/db/flood_prevention_db_vectordb/
 src/db/flood_prevention_db_bm25/
 src/db/context_cache.json
 
-
+# Data folders
 data/水利文件/
 data/防洪预案/
+
+# Large model files
+models/
+*.gguf
+
+# One-time debug/test scripts (not needed in repo)
+scripts/debug_*.py
+scripts/test_oneke_*.py
+scripts/test_parser_fix.py
+scripts/test_loading_fix.py
+scripts/download_oneke*.py
+scripts/direct_download.py
+scripts/search_hf.py
+scripts/monitor_run.py
+scripts/check_oneke_files.py
+scripts/verify_oneke_extraction.py
+scripts/inspect_kg_content.py
+scripts/test_kg_small_sample.py
+scripts/Modelfile
+
+# KG test database
+src/db/knowledge_graph_test/
+
+# Generated images
+knowledge_graph.png
 

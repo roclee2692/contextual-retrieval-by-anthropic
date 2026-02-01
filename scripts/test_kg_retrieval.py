@@ -39,7 +39,12 @@ def test_kg_retrieval():
 
     # 1. Initialize Objects (Must match creation config)
     print("Initialize LLM & Embedding...")
-    llm = Ollama(model="gemma3:12b", request_timeout=120.0)
+    # Use OneKE to stay consistent with the extraction phase and VRAM usage
+    llm = Ollama(
+        model="oneke", 
+        request_timeout=120.0,
+        context_window=1024
+    )
     embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-zh-v1.5", device="cpu")
     Settings.llm = llm
     Settings.embed_model = embed_model

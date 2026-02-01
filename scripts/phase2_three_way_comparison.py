@@ -38,16 +38,27 @@ from typing import List
 
 load_dotenv()
 
-# 测试问题集（扩展版，增加不同类型）
+# 测试问题集（Redesigned for Phase 3: Attribute & Topology Test）
 TEST_QUERIES = [
-    {"query": "杨家横水库的汛限水位是多少？", "category": "数值查询", "type": "简单事实"},
-    {"query": "防洪预案中的应急预案等级有哪些？", "category": "分级查询", "type": "枚举列表"},
-    {"query": "堤防巡查的标准是什么？", "category": "标准规范", "type": "规则描述"},
-    {"query": "汛期调度的规则是什么？", "category": "规则流程", "type": "流程说明"},
-    {"query": "防洪抢险有哪些措施？", "category": "措施清单", "type": "枚举列表"},
-    {"query": "水位超过多少需要启动预案？", "category": "触发条件", "type": "条件判断"},
-    {"query": "谁负责防洪指挥调度？", "category": "责任人查询", "type": "实体查询"},
-    {"query": "水库大坝出现险情时应该联系谁？", "category": "应急联系", "type": "多跳推理"},
+    # 1. 数值属性类 - KG (如有Schema优化) 应有提升
+    {"query": "杨家横水库的汛限水位是多少？", "category": "数值属性", "type": "事实查证"},
+    {"query": "泼河水库的汛限水位是多少？", "category": "数值属性", "type": "事实查证"},
+    
+    # 2. 责任人类 - KG 强项 (Topological)
+    {"query": "杨家横水库的大坝安全责任人是谁？", "category": "实体关系", "type": "责任人查询"},
+    {"query": "谁负责防洪指挥部的统一调度？", "category": "实体关系", "type": "职责查询"},
+
+    # 3. 逻辑触发类 - 混合领域 (Condition)
+    {"query": "水位超过多少米需要启动III级响应？", "category": "逻辑条件", "type": "条件判断"},
+
+    # 4. 列表枚举类 - CR/Baseline 强项
+    {"query": "防洪抢险物资储备包括哪些东西？", "category": "清单枚举", "type": "列表查询"},
+    
+    # 5. 复杂推理类 - 多跳
+    {"query": "如果不进行甚至泄洪，会有什么后果？", "category": "因果推理", "type": "推理分析"},
+
+    # 6. 长文本描述类 - Baseline/CR 绝对强项
+    {"query": "请详细描述堤防巡查的具体步骤和标准。", "category": "长文描述", "type": "规则说明"}
 ]
 
 def chinese_tokenizer(text):
@@ -148,7 +159,12 @@ def init_kg_retriever(kg_dir):
         print(f"   ❌ KG目录不存在: {kg_dir}")
         return None
     
-    llm = Ollama(model="gemma3:12b", request_timeout=120.0)
+    # Use OneKE for consistency and VRAM constraints
+    llm = Ollama(
+        model="oneke", 
+        request_timeout=120.0,
+        context_window=1024
+    )
     embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-zh-v1.5", device="cpu")
     Settings.llm = llm
     Settings.embed_model = embed_model
