@@ -1,4 +1,4 @@
-# Contextual Retrieval on Structured Data: A Reproducible Experiment
+# Contextual Retrieval Experiments: From Canteen to Flood Prevention
 
 **[English](README.md) | [简体中文](README_CN.md)**
 
@@ -6,570 +6,324 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Reproducible](https://img.shields.io/badge/reproducible-yes-green.svg)](https://github.com/roclee2692/contextual-retrieval-by-anthropic)
 
-> **Based on**: [Anthropic's Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval) | **Extended with**: Chinese dataset + comparative experiments + jieba tokenization + knowledge graph
+> **Core Finding**: After reproducing Anthropic's Contextual Retrieval algorithm, we conducted systematic comparative experiments on multiple domain datasets. We discovered that CR exhibits a "double-edged sword" effect across different data types, while Knowledge Graphs still face significant challenges under current technical conditions.
 
 ---
 
-## ⚡ TL;DR
+## 📋 Experiment Phases Overview
 
-**What**: Reproduced Anthropic's Contextual Retrieval on Chinese canteen menu data (270k chars) with 3 controlled experiments  
-**Best Result**: Jieba+KG achieved **10.13s avg response** (21% faster) with **19.9% hybrid retrieval speedup**  
-**Key Finding**: CR shows **double-edged effect** on structured data — +100% disambiguation accuracy but -100% on detail-heavy queries due to **lack of natural language context**
+This project is divided into **three phases** with **6 comparative experiments**:
 
-### 📊 At-a-Glance Results (Canteen Dataset)
-
-| Experiment | Method | Avg Time | Overall Accuracy | Best Use Case |
-|-----------|--------|----------|-----------------|---------------|
-| **Exp 1** | Baseline RAG | 12.79s | 83.3% | Category queries (100%) |
-| **Exp 2** | CR Enhanced | 13.64s | **86.0%** ✅ | Price queries (100%), disambiguation |
-| **Exp 3** | Jieba + KG | **10.13s** ⚡ | 77.7% | Speed (21% faster than baseline) |
-
-**Winner**: CR improves accuracy by +3%, but **Jieba tokenization** brings the biggest speed gain (+21%)
+| Phase | Dataset | Model Configuration | Experiment Content | Status |
+|-------|---------|---------------------|-------------------|--------|
+| **Phase 1** | Canteen Menu (Structured Lists) | Gemma3:12B | 3 experiments: Baseline vs CR vs Jieba+KG | ✅ Complete |
+| **Phase 2** | Flood Prevention Plans (Government Documents) | Gemma3:12B | 3 experiments: Baseline vs CR vs Deep KG | ✅ Complete |
+| **Phase 3** | Flood Prevention Plans (Same) | OneKE-13B + OpenKG | Knowledge Graph Schema Optimization Attempt | ⚠️ Bottleneck |
 
 ---
 
-## 🆕 Phase 2 Extension: Flood Prevention (3 Experiments)
+## 🚀 Quick Start
 
-Building on Phase 1 findings, we conducted a **complete three-way comparison** on flood prevention domain data.
+### Environment Setup
 
-*Detailed report: `results/flood_comparison_report.md`*
+```bash
+# 1. Clone repository
+git clone https://github.com/roclee2692/contextual-retrieval-by-anthropic.git
+cd contextual-retrieval-by-anthropic
 
-### Experiment Design
-| Experiment | Description | Script |
-|---|---|---|
-| **Exp 4: Baseline** | Pure Vector+BM25 (No CR) | `run_flood_comparison.py` |
-| **Exp 5: CR Enhanced** | Context-augmented retrieval | `run_flood_comparison.py` |
-| **Exp 6: Deep KG** | Knowledge Graph reasoning | `create_knowledge_graph.py` + `test_kg_retrieval.py` |
+# 2. Create virtual environment
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+# source .venv/bin/activate  # Linux/Mac
 
-### Key Results from Phase 2 (Flood Dataset)
+# 3. Install dependencies
+pip install -r requirements.txt
 
-1.  **Baseline vs. CR: A Tie (Scientific Update)**:
-    *   **Score**: Baseline (0.493) vs CR (0.495).
-    *   **Finding**: On highly structured policy documents (unlike Phase 1's fragmented data), adding LLM-generated context **adds no significant value**. The original document structure is sufficient for retrieval.
-    *   **Implication**: CR is not a silver bullet; it excels where context is *missing*, not where it is *abundant*.
+# 4. Install Ollama and download models
+# Download Ollama: https://ollama.com/download
+ollama pull gemma3:12b    # QA model
+ollama pull gemma2:2b     # Context generation model (optional)
+```
 
-2.  **Knowledge Graph Limitations**:
-    *   Without strict Schema constraints, generic KG extraction produces noisy triplets that perform poorly in precision retrieval (Score: 1000.0 artificial high, actual relevance low).
+### Running Experiments
+
+#### Phase 1: Canteen Experiment
+```bash
+# Step 1: Build database
+python scripts/create_save_db.py
+
+# Step 2: Run A/B test
+python scripts/test_ab_simple.py
+```
+
+#### Phase 2: Flood Prevention Experiment
+```bash
+# Run complete three-way comparison (Baseline vs CR vs KG)
+python scripts/phase2_three_way_comparison.py
+```
+
+#### Phase 3: Baseline vs CR Statistical Comparison
+```bash
+# Run dual comparison experiment
+python scripts/phase3_baseline_vs_cr.py
+
+# Statistical significance analysis
+python scripts/analyze_experiment_validity.py
+```
 
 ---
 
-## � Phase 3: Knowledge Graph Schema Optimization (2026-01-27)
+## 📊 Phase 1: Canteen Menu Experiment (Structured List Data)
 
-> **Core Improvement**: Upgraded KG "soft-constraint Schema" to "hard-constraint instruction extraction mode" (mimicking OneKE/OpenSPG), forcing numerical attribute extraction.
+> **Goal**: Validate CR performance on **non-natural language structured text**
 
-### Experiment Background
+### Experiment Configuration
 
-In Phase 2, we found that while Knowledge Graph (KG) could be built, retrieval quality was extremely poor. Deep analysis revealed root causes:
+| Experiment | Method | Vector Search | BM25 Tokenizer | Context Enhancement | Knowledge Graph |
+|------------|--------|---------------|----------------|---------------------|-----------------|
+| **Exp 1** | Baseline RAG | ✅ bge-small-zh | ❌ Default English | ❌ | ❌ |
+| **Exp 2** | CR Enhanced | ✅ bge-small-zh | ❌ Default English | ✅ CR Prefix | ❌ |
+| **Exp 3** | Jieba + KG | ✅ bge-small-zh | ✅ jieba | ❌ | ✅ NetworkX |
 
-1. **Soft Constraint Failure**: LLM only focused on "management relations" (managed_by), ignoring "numerical attributes" (has_limit_level)
-2. **Metadata Preference**: LLM tended to extract chapter titles and regulation references instead of actual answer content
-3. **Schema-Query Mismatch**: Test questions ("What is the flood control water level?") required attribute queries, but KG only stored topological relations
+### Performance Comparison
 
-### Improvement: Simulating OneKE/OpenSPG Instruction Extraction
+| Metric | Exp 1 (Baseline) | Exp 2 (CR) | Exp 3 (Jieba+KG) | Best |
+|--------|-----------------|-----------|------------------|------|
+| **Avg Response Time** | 12.79s | 13.64s (+6.7%) | **10.13s** ⚡ | **Exp 3** |
+| **Price Query Accuracy** | 75% | **100%** ✅ | **100%** ✅ | **Exp 2/3** |
+| **Category Query Accuracy** | **100%** ✅ | 83% | 83% | **Exp 1** |
+| **Information Completeness** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | **Exp 1/3** |
+
+### 🔍 Core Finding: CR's Double-Edged Sword Effect
+
+#### ✅ CR Success Case (Semantic Disambiguation)
+**Q8: Tianjin Baozi Location Query**
+- **Baseline**: 0% - Confused with "Hong Kong Kowloon Bao"
+- **CR**: **100%** ✅ - Successfully identified correct stall
+- **Reason**: CR context prefix eliminated semantic ambiguity
+
+#### ❌ CR Failure Case (Information Loss)
+**Q9: Stall Name Query**
+- **Baseline**: **100%** ✅ - Listed all noodle windows
+- **CR**: **0%** ❌ - Lost stall names during context generation
+- **Reason**: LLM summarization compression caused critical detail loss
+
+### 🏆 Phase 1 Ranking
+
+1. 🥇 **Exp 3 (Jieba+KG)** - Fastest, most balanced performance
+2. 🥈 **Exp 1 (Baseline)** - Best category accuracy, most complete information
+3. 🥉 **Exp 2 (CR)** - Strongest disambiguation, but notable information loss
+
+---
+
+## 📊 Phase 2: Flood Prevention Experiment (Government Document Data)
+
+> **Goal**: Validate Baseline, CR, and KG reasoning capabilities on **vertical domain complex text**
+>
+> **Model**: Local Gemma3:12B model
+
+### Experiment Configuration
+
+| Experiment | Method | Description |
+|------------|--------|-------------|
+| **Exp 4** | Baseline (Flood) | Pure Vector+BM25 retrieval (no context enhancement) |
+| **Exp 5** | CR Enhanced (Flood) | Context-augmented retrieval |
+| **Exp 6** | Deep KG (Flood) | LlamaIndex Knowledge Graph + Graph reasoning |
+
+### Performance Comparison (Scientific Correction 2026/01/24)
+
+**Important Note**: After correcting experimental control group fairness (Baseline and CR both using identical ChromaDB persistence structure and Jieba tokenization parameters):
+
+| Metric | Baseline | CR Enhanced | Knowledge Graph |
+|--------|----------|-------------|-----------------|
+| **Avg Retrieval Score** | **0.493** | **0.495** | 1000.0* |
+| **Conclusion** | **Stable Baseline** | **No Significant Difference** | **Unusable** |
+
+*\*KG score=1000.0 is framework default high score, actual content relevance is low*
+
+### 🔍 Core Finding: CR Has Limited Effect on Structured Documents
+
+#### 1. CR and Baseline Form a "Tie"
+- **Data**: 0.493 vs 0.495 (only 0.4% difference)
+- **Reason**: Flood Prevention Plans have extremely strong structure (chapters, clauses, numbering). The original document already provides sufficient context. LLM-generated additional Context becomes information noise instead.
+
+#### 2. Knowledge Graph's "False Prosperity"
+- KG group scored high (1000), but retrieval results were mostly "table of contents" or "titles"
+- Using Gemma3:12B for knowledge extraction yielded poor results
+- Demonstrates limitations of general-purpose LLMs in vertical domain knowledge graph extraction
+
+### 🏆 Phase 2 Ranking
+
+1. 🥇 **Baseline (Tie)** - Simple, fast, robust
+2. 🥇 **CR Enhanced (Tie)** - Higher cost, but no effect difference
+3. 🥉 **Knowledge Graph** - Slow and poor results
+
+---
+
+## 📊 Phase 3: Knowledge Graph Optimization Attempt (OneKE + OpenKG)
+
+> **Goal**: Attempt to improve Phase 2's poor KG performance using dedicated knowledge extraction models
+>
+> **Model**: OneKE-13B (Q4 quantized version)
+>
+> **Framework**: Based on OpenKG/OpenSPG hard-constraint Schema approach
+
+### Improvement Approach
+
+In Phase 2, we found that using Gemma3:12B for knowledge extraction performed poorly. Phase 3 attempts:
+
+1. **Switch Extraction Model**: From general-purpose LLM (Gemma) to dedicated knowledge extraction model (OneKE-13B)
+2. **Hard-Constraint Schema**: Simulate OneKE/OpenSPG instruction extraction mode
 
 **Before (Soft Constraint Prompt)**:
 ```
 [Target Entity Types]
 - Reservoir, River
 - Organization, Person
-
-[Key Relation Types]
-- managed_by (managed by...)
-- located_at (located at...)
 ```
 
 **After (Hard Constraint Instructions)**:
 ```
-1. Attribute Relations - *MUST attach attributes to entities via relations*
-   - has_limit_level (flood control level is) -> (Yangjiaheng Reservoir, has_limit_level, 215.5m)
-   - has_warn_level (warning level is) -> (Huaihe River, has_warn_level, 25.0m)
+1. Attribute Relations - MUST extract:
+   - has_limit_level (flood limit level is) -> (Yangjiaheng Reservoir, has_limit_level, 215.5m)
    - has_capacity (capacity is) -> (Changzhuang Reservoir, has_capacity, 5 million m³)
 
 2. Topology Relations
    - managed_by (managed by...), responsible_for (responsible for...)
-
-3. Logic Relations
-   - triggers (triggers...), requires_action (requires action...)
 ```
 
-Also increased `max_triplets_per_chunk` from 3 to 10 for higher extraction density.
+### ⚠️ Problems Encountered
 
-### Phase 3 Experiment Results (Redesigned Question Set)
+In actual experiments, we discovered **the following issues with OneKE model**:
 
-**Test Time**: 2026-01-27 18:31:57
+| Problem | Description | Impact |
+|---------|-------------|--------|
+| **Extremely Low Extraction Rate** | 2510 documents only extracted ~200 triplets (expected thousands) | Sparse KG, cannot cover queries |
+| **Unstable Output Format** | Model JSON output inconsistent with documentation | Parsing difficulties |
+| **Insufficient Domain Adaptation** | OneKE mainly trained on general domains, poor recognition of flood prevention terminology | Entity recognition errors |
+| **Hardware Limitations** | 13B model requires Q4 quantization on 8GB VRAM, affecting precision | Quality degradation |
 
-#### Question Classification
+### Phase 3 Alternative: Baseline vs CR Statistical Validation
 
-| Type | Count | Example Question | Tests |
-|------|-------|-----------------|-------|
-| Numerical Attribute | 2 | "What is Yangjiaheng Reservoir's flood control water level?" | KG attribute query capability |
-| Entity Relation | 2 | "Who is the dam safety manager of Yangjiaheng Reservoir?" | KG topological relations |
-| Logical Condition | 1 | "Above what water level should Level III response be triggered?" | Conditional judgment |
-| List Enumeration | 1 | "What emergency supplies are stored for flood control?" | List completeness |
-| Causal Reasoning | 1 | "What happens if flood discharge is not performed?" | Multi-hop reasoning |
-| Long Text Description | 1 | "Describe the detailed steps and standards for dike inspection." | Long-text retrieval |
+Since the KG approach is temporarily infeasible, we pivoted to more rigorous statistical validation of **Baseline vs CR**:
 
-#### Performance Comparison (Core Metrics)
+```bash
+python scripts/phase3_baseline_vs_cr.py
+python scripts/analyze_experiment_validity.py
+```
 
-| Metric | Baseline | CR Enhanced | KG (Improved Schema) |
-|--------|----------|-------------|----------------------|
-| **Avg Retrieval Score** | 0.483 | 0.488 | 1000.000* |
-| **Avg Response Time** | **0.05s** ⚡ | **0.03s** ⚡ | 6.76s ⏱️ |
-| **Correct Answers** | 3/8 (37.5%) | 3/8 (37.5%) | 0/8 (0%) |
-| **Context Labels** | ❌ None | ✅ English labels | ❌ None |
+#### Statistical Analysis Results
 
-*\*KG score is framework default, not similarity*
+| Metric | Value | Interpretation |
+|--------|-------|----------------|
+| **Sample Size** | 10 questions | Small, needs expansion |
+| **Mean Difference** | +0.006 (CR slightly better) | 1.1% improvement |
+| **t-statistic** | 3.95 | > critical value 2.262 |
+| **p-value** | < 0.05 | ✅ Statistically significant |
+| **Cohen's d** | 1.25 | Large effect size |
+| **Sign Test** | 8 wins/0 losses/2 ties | Strong CR consistency |
 
-#### Question-by-Question Analysis (Selected)
+#### Conclusion
 
-##### Q1: What is Yangjiaheng Reservoir's flood control water level? (Numerical)
+- ✅ **CR is indeed slightly better than Baseline** (statistically significant)
+- ⚠️ **Improvement magnitude is small** (only 1.1%)
+- ⚠️ **Limited sample size** (n=10), needs more testing to verify
 
-| Method | Score | Time | Top-1 Preview | Correct? |
-|--------|-------|------|--------------|----------|
-| Baseline | 0.603 | 0.20s | "287.90mm (1986), rainfall distribution..." | ❌ Wrong (rainfall) |
-| CR | 0.611 | 0.09s | "Flood control procedures for Yangjiaheng..." | ⚠️ Truncated |
-| KG | 1000.0 | 24.18s | "46297.83318299.067241000472.4304.91..." | ❌ Garbled numbers |
+### 🔮 Future Improvement Directions
 
-**Analysis**: All methods failed. Baseline mistook rainfall for water level, KG located data table but returned OCR garbage.
-
-##### Q2: What is Pohe Reservoir's flood control water level? (Numerical)
-
-| Method | Score | Time | Top-1 Preview | Correct? |
-|--------|-------|------|--------------|----------|
-| Baseline | 0.499 | 0.03s | "...below flood control level 298.50m..." | ✅ **Correct** |
-| CR | 0.510 | 0.02s | "Yangtze River...flood level 298.50m..." | ✅ **Correct** |
-| KG | 1000.0 | 2.90s | "Emergency flood measures..." | ❌ Table of contents |
-
-**Analysis**: Baseline and CR successfully found answer (298.50m), KG returned document TOC.
-
-##### Q6: What emergency supplies are stored? (List Enumeration)
-
-| Method | Score | Time | Top-1 Preview | Correct? |
-|--------|-------|------|--------------|----------|
-| Baseline | 0.489 | 0.02s | "Includes: emergency lighting, safety switches, fire equipment..." | ✅ **Correct** |
-| CR | 0.489 | 0.02s | "Emergency preparedness...lighting..." | ✅ **Correct** |
-| KG | 1000.0 | 5.67s | "Landslides and geological disasters..." | ❌ Geological risks |
-
-**Analysis**: Baseline and CR successfully listed supplies, KG incorrectly located geological disaster content.
-
-### 🔍 Core Findings: Schema Improvement Effects & Limitations
-
-#### 1. Schema Improvement Shows Promise (Positioning Improved)
-
-**Evidence**:
-- Q1: KG returned garbled data but successfully **located the table containing water level data** (from completely irrelevant to data table)
-- Q5: KG provided specific water level numbers (298.50m, 304.80m), indicating improved attribute extraction
-
-**Conclusion**: Upgrading soft constraints to hard instruction constraints (forcing extraction of `has_limit_level` etc.) did enhance LLM's sensitivity to numerical attributes.
-
-#### 2. Data Quality Became New Bottleneck (OCR Issue)
-
-**Root Cause**:
-- Original `.txt` files converted from PDF, **table structure completely lost**
-- Tables converted to number strings like `46297.83318299.067241000472.4...`
-- Even when KG correctly locates tables, humans cannot extract info from garbage
-
-**Comparison**:
-- Baseline/CR **got lucky**: Matched natural language descriptions like "flood control level 298.50m" in text paragraphs
-- KG **got unlucky**: Located raw data table, but table was corrupted
-
-#### 3. KG's "Metadata Preference" Issue Persists
-
-From 8 questions, KG returned content types:
-- **Garbled number tables**: 2 times (Q1, Q3)
-- **Document TOC/chapter titles**: 3 times (Q2, Q5, Q8)
-- **Regulation references**: 1 time (Q8)
-- **Partially relevant**: 2 times (Q4, Q7)
-
-**Reason**:
-Even with forced attribute extraction, LLM processing long documents still tends to:
-1. Identify "chapter titles" as important entities (e.g., "6.2 Emergency Response")
-2. Identify "regulation names" as entities (e.g., "PRC Water Law")
-3. Ignore actual answers in body text
-
-This is an **inherent bias of general LLMs**, hard to change with Prompts alone.
-
-#### 4. Baseline and CR Stability Confirmed
-
-**Data confirms Phase 2 conclusions**:
-- Baseline score: 0.483 (Phase 2) → 0.483 (Phase 3) ✅ Stable
-- CR score: 0.495 (Phase 2) → 0.488 (Phase 3) ✅ Stable  
-- Gap: 0.012 (Phase 2) → 0.005 (Phase 3) ✅ Nearly identical
-
-**Further validation**: On **highly self-contained government documents**, CR's added context prefixes (like "This section describes flood control procedures for Yangjiaheng Reservoir") contribute **negligibly** to retrieval precision.
-
-**CR's real value**: Provides **human-readable English labels** for quick understanding of result sources and topics, but contributes little to machine retrieval accuracy.
-
-### 💡 Academic Value & Recommendations
-
-#### Answering the Advisor's Questions
-
-**Q: Have you tried OneKE or OpenSPG frameworks?**
-
-A: We **simulated the core ideas of OneKE/OpenSPG** in Phase 3 — upgrading soft-constraint Schema to hard-constraint instruction extraction mode. Specific improvements:
-
-1. **Explicit Attribute Definition**: Forced LLM to extract "flood control level" as `(Reservoir, has_limit_level, Value)` triplets
-2. **Increased Extraction Density**: `max_triplets_per_chunk` from 3 to 10
-3. **Multi-type Relations**: Distinguished Attribute, Topology, and Logic relations
-
-**Experimental results validated the direction**:
-- ✅ **Positioning improved**: From "completely irrelevant" to "found data table"
-- ❌ **Bottleneck shifted**: Problem changed from "can't find" to "OCR quality poor"
-
-**Next improvement directions**:
-1. **Table Structure Parsing**: Use LlamaParse or Unstructured.io to preserve table Markdown structure
-2. **Specialized Extraction Models**: Deploy OneKE's Qwen/Llama fine-tuned versions (not general Gemma)
-3. **Post-processing Entity Disambiguation**: Merge synonymous entities like "Yangjiaheng Reservoir" and "Yangjiaheng"
-
-**Q: Can design improvements beat pure LLM extraction?**
-
-A: **Theoretically yes, but this experiment was limited by upstream data quality**:
-- OneKE/OpenSPG's core advantages are **forced Schema compliance** and **entity normalization**
-- Our simulation proved Schema constraints improve positioning
-- But when data source has corrupted tables, no extraction framework can help
-
-**Recommendation**: Combining table parsing tools (Camelot, Tabula) + specialized IE models (OneKE) + strict Schema (SPG) should achieve qualitative breakthroughs.
-
-### 🏆 Phase 3 Overall Ranking
-
-1. 🥇 **Baseline** - Fast (0.05s), High accuracy (37.5%), Complete info
-2. 🥈 **CR Enhanced** - Fastest (0.03s), Has context labels, Similar accuracy (37.5%)
-3. 🥉 **Knowledge Graph** - Slow (6.76s), Low accuracy (0%), Unreadable results
-
-**Core Conclusion**:
-- On **self-contained documents** like government files, traditional RAG is already powerful enough
-- CR's value lies in **context labels** rather than retrieval precision
-- KG requires **specialized frameworks** (OneKE/OpenSPG) + **high-quality OCR** to be effective
+1. **Table Structure Parsing**: Use LlamaParse or Unstructured.io to preserve table structure
+2. **Dedicated Extraction Models**: Wait for OneKE versions fine-tuned for vertical domains
+3. **Data Quality Improvement**: Improve PDF→TXT OCR quality
+4. **Expand Test Set**: Increase to 30-50 test questions
 
 ---
 
-## �🔄 System Pipeline
+## 🔄 System Pipeline
 
 ```mermaid
 graph LR
     A[PDF Data] --> B[Text Chunking]
-    B --> C{CR Enabled?}
-    C -->|Yes| D[LLM Context Gen]
+    B --> C{Enable CR?}
+    C -->|Yes| D[LLM Generate Context]
     C -->|No| E[Original Chunks]
-    D --> F[Concat Context<br/>+ Original]
-    E --> G[Embedding<br/>bge-small-zh]
+    D --> F[Concatenate Context + Original]
+    E --> G[Embedding Vectorization]
     F --> G
-    G --> H[Vector DB<br/>ChromaDB]
-    B --> I{Jieba?}
-    I -->|Yes| J["Chinese Tokenize<br/>(Exp 1-3)"]
-    I -->|No| K[Default English]
+    G --> H[Vector DB ChromaDB]
+    
+    subgraph Hybrid Retrieval
+    B --> I{Enable Jieba?}
+    I -->|Yes| J["Chinese Tokenization<br/>(BM25)"]
+    I -->|No| K[Default Tokenization]
     J --> L[BM25 Index]
     K --> L
-    M[User Query] --> N[Hybrid Retrieval]
-    H --> N
-    L --> N
-    
-    subgraph "Phase 2: Knowledge Graph"
-    B --> O[Entity Extraction]
-    O --> P[Graph Store]
-    P --> Q[Graph Query]
-    Q -.-> N
     end
+
+    subgraph "Knowledge Graph (Experimental)"
+    B --> M[Entity Extraction]
+    M --> N[Graph Construction]
+    N --> O[Graph Reasoning Query]
+    end
+    
+    H -.-> P[Final Hybrid Retrieval]
+    L -.-> P
+    O -.-> P
 ```
 
 ---
 
-## 🎯 What It Is
-
-This project reproduces [Anthropic's Contextual Retrieval paper](https://www.anthropic.com/news/contextual-retrieval) with three comparative experiments in Chinese:
-
-| Experiment | Method | Core Technologies | Target Data |
-|-----------|--------|------------------|-------------|
-| **Exp 1** | Baseline RAG | Vector Retrieval (bge-small-zh) + BM25 | Canteen (List) |
-| **Exp 2** | CR Enhanced | LLM-generated context prefix + Vector+BM25 | Canteen (List) |
-| **Exp 3** | With Jieba + KG | Jieba Chinese tokenization + Knowledge Graph | Canteen (List) |
-| **Exp 4** | Baseline (Flood) | Vector + BM25 (No Context) | Flood Plans (Text) |
-| **Exp 5** | CR (Flood) | Context Retrieval (LLM prefixes) | Flood Plans (Text) |
-| **Exp 6** | Deep KG (Flood) | LlamaIndex Graph + Reasoning | Flood Plans (Text) |
-
----
-
-## 📊 Phase 1 Results: Canteen Dataset (食堂数据)
-
-### Experiment Configuration Comparison
-
-| Experiment | Vector Retrieval | BM25 Tokenizer | Context Enhancement | Knowledge Graph |
-|------------|-----------------|----------------|---------------------|----------------|
-| **Exp 1: Baseline** | ✅ bge-small-zh | ❌ Default (English) | ❌ | ❌ |
-| **Exp 2: CR Enhanced** | ✅ bge-small-zh | ❌ Default (English) | ✅ CR Prefix | ❌ |
-| **Exp 3: Jieba + KG** | ✅ bge-small-zh | ✅ Jieba + "包"→"包子" | ❌ | ✅ NetworkX |
-
-### Performance & Accuracy Metrics
-
-| Metric | Exp 1 (Baseline) | Exp 2 (CR) | Exp 3 (Jieba+KG) | Winner |
-|--------|-----------------|-----------|----------------|--------|
-| **Avg Response Time** | 12.79s | 13.64s (+6.7%) | **10.13s** ⚡ | **Exp 3** |
-| **Hybrid Retrieval Speedup** | 9.9% | 8.5% | **19.9%** | **Exp 3** |
-| **Price Query Accuracy** | 75% | **100%** ✅ | **100%** ✅ | **Exp 2/3** |
-| **Category Query Accuracy** | **100%** ✅ | 83% | 83% | **Exp 1** |
-| **Location Query Accuracy** | 75% | **75%** | 50% | **Exp 1/2** |
-| **Information Completeness** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | **Exp 1/3** |
-
-### 🔍 Critical Findings: CR's Double-Edged Sword
-
-#### ✅ CR Success Cases (Semantic Disambiguation)
-**Q8: Tianjin Baozi Location Query**
-- **Exp 1 (Baseline)**: 0% - Confused with "Hong Kong Jiulong Bao"
-- **Exp 2 (CR)**: **100%** ✅ - Successfully identified correct stall
-- **Root Cause**: CR context prefix eliminated semantic ambiguity
-
-**Q16: 2 Yuan Porridge Query**  
-- **Exp 1**: 60% - Partial match
-- **Exp 2**: **100%** ✅ - Exact match with price
-- **Exp 3**: 85% - Good but not perfect
-
-#### ❌ CR Failure Cases (Information Loss)
-**Q9: Stall Name Query**
-- **Exp 1 (Baseline)**: **100%** ✅ - Listed all noodle stalls
-- **Exp 2 (CR)**: **0%** ❌ - Stall names lost during context generation
-- **Reason**: LLM summarization compressed away key details
-
-**Q15: Baozi Variety Query**
-- **Exp 1**: Complete list (12 types)
-- **Exp 2**: Generic description only
-- **Exp 3**: **Detailed enumeration** ✅
-
-### 💡 Key Academic Insights
-
-#### 1. CR is NOT a Universal Improvement for Chinese RAG
-> "CR acts as a precision tool for specific query types, not a blanket enhancement."
-
-**Evidence**:
-- ✅ **Disambiguation queries**: +100% (Tianjin Baozi)
-- ❌ **Enumeration queries**: -100% (Stall names)
-- ⚠️ **Information density**: Context compression loses details
-
-#### 2. Hybrid Retrieval Performance Curve
-```
-Response Time Optimization:
-Exp 1: 11.52s (Baseline)
-Exp 2: 12.48s (+8.3% ↗️ CR overhead)
-Exp 3: 10.13s (-12.1% ↘️ Jieba + optimized index)
-```
-
-**Finding**: BM25 + Vector hybrid is **19.9% faster** than pure vector (Exp 3)
-
-#### 3. Chinese Tokenization Impact on BM25
-
-| Tokenization Strategy | Q8 Tianjin Baozi | Q16 Porridge | Avg Accuracy |
-|-----------------------|------------------|--------------|--------------|
-| No Jieba (historical) | 0% | 60% | ~30% |
-| Jieba + "包" expansion | 50% (hybrid) | 85% | ~67.5% |
-| Jieba + CR context | **100%** | **100%** | **100%** |
-
-**Academic Value**: First quantified proof of synergy between Jieba tokenization and CR enhancement in Chinese BM25 retrieval.
-
-### 🏆 Overall Ranking
-
-1. 🥇 **Exp 3 (Jieba + KG)** - Fastest, most balanced performance
-2. 🥈 **Exp 1 (Baseline)** - Best category accuracy, highest information completeness  
-3. 🥉 **Exp 2 (CR)** - Best disambiguation, but significant information loss
-
----
-
-## 📊 Phase 2 Results: Flood Prevention (防洪预案)
-
-### Experiment Configuration Comparison
-
-| Experiment | Vector Retrieval | BM25 Tokenizer | Context Enhancement | Knowledge Graph | DB Pre-built |
-|------------|-----------------|----------------|---------------------|----------------|--------------|
-| **Exp 4: Baseline** | ✅ bge-small-zh | ✅ Jieba | ❌ | ❌ | ❌ On-the-fly |
-| **Exp 5: CR Enhanced** | ✅ bge-small-zh | ✅ Jieba | ✅ CR Prefix (gemma2:2b) | ❌ | ✅ Yes |
-| **Exp 6: Deep KG** | ✅ bge-small-zh | N/A | ❌ | ✅ LlamaIndex KG | ✅ Yes |
-
-### Performance & Accuracy Metrics
-
-| Metric | Baseline | CR Enhanced | Knowledge Graph | Winner |
-|--------|----------|-------------|-----------------|--------|
-| **Avg Response Time** | **0.04s** ⚡ | 0.03s | 5.79s (145x slower) | **Baseline** |
-| **Avg Retrieval Score** | **0.647** ✅ | 0.495 (-23.5%) | N/A* | **Baseline** |
-| **Numerical Query Accuracy** | **75.2%** | 61.1% | Poor | **Baseline** |
-| **Enumeration Query Accuracy** | **69.4%** | 51.2% | Poor | **Baseline** |
-| **Multi-hop Reasoning** | 62.4% | 46.2% | **Fails completely** | **Baseline** |
-| **Database Build Time** | 0s (instant) | ~11min | ~45min | **Baseline** |
-
-*\*KG score=1000.0 uses different metric, retrieval quality assessed separately*
-
-### 🔍 Critical Findings: Baseline Reversal Effect
-
-#### 🎯 Baseline Outperforms CR (+30.7%)
-**Opposite to Phase 1** - On highly structured documents, simple retrieval wins:
-
-**Q1: 杨家横水库的汛限水位是多少？(Flood Control Water Level)**
-- **Baseline**: 0.752 - "雨前水位达汛限水位 298.50m..." ✅ Exact answer
-- **CR**: 0.611 - "Flood control procedures and indicators..." ❌ Lost numbers
-- **Why**: CR's summarization dropped the critical "298.50m" value
-
-**Q2: 防洪预案中的应急预案等级有哪些？(Emergency Level Classification)**
-- **Baseline**: 0.694 - Listed all 4 levels (Red/Orange/Yellow/Blue) ✅
-- **CR**: 0.512 - Generic description without enumeration ❌
-- **Why**: Context compression lost enumeration details
-
-**Q8: 水库大坝出现险情时应该联系谁？(Emergency Contact)**
-- **Baseline**: 0.624 - Found contact procedures ✅
-- **CR**: 0.462 - Vague organizational structure ❌
-- **KG**: Returned "Fee Collection" section (completely irrelevant) ❌❌
-
-#### ⚠️ Knowledge Graph Complete Failure
-Despite 5.79s avg response time (145x slower than Baseline), KG retrieval quality was **systematically poor**:
-
-| Query | KG Top-1 Result | Relevance | Issue |
-|-------|----------------|-----------|-------|
-| Q2 (Emergency Levels) | Monitoring facility descriptions | ❌ Irrelevant | Wrong entity extraction |
-| Q7 (Responsible Person) | "11.5 费用收取" (Fee Collection) | ❌ Completely wrong | Failed graph traversal |
-| Q3 (Inspection Standards) | Water level data table | ❌ Off-topic | Weak triplet quality |
-
-**Root Causes**:
-1. **Entity extraction fails on Chinese regulatory text** - LLM couldn't properly identify role/responsibility entities
-2. **Triplet quality insufficient** - Relations like "负责"(responsible for) not captured
-3. **Graph traversal logic broken** - Multi-hop queries returned random nodes
-
-### 💡 Key Academic Insights
-
-#### 1. Data Structure Determines CR Effectiveness (Reversal Finding)
-
-| Data Type | Example | Best Method | CR Effect |
-|-----------|---------|-------------|-----------|
-| **Unstructured** | Reviews, comments, chat logs | CR Enhanced | ✅ +30-100% |
-| **Semi-structured** | Tables with narrative | Baseline or CR | ≈ Similar |
-| **Highly Structured** | Regulations, procedures, forms | **Baseline** | ❌ -23.5% |
-
-**Phase 1 vs Phase 2 Comparison**:
-```
-Phase 1 (Canteen - List Data):
-  Baseline: 0% (Q8 Tianjin Baozi) → CR: 100% ✅ (+100%)
-  
-Phase 2 (Flood - Structured Docs):
-  Baseline: 0.647 → CR: 0.495 ❌ (-23.5%)
-```
-
-**Conclusion**: CR's value is **inversely proportional** to document structure level.
-
-#### 2. Why KG Failed (Unexpected)
-Initial hypothesis: KG would excel at multi-hop reasoning (e.g., "Who contacts whom during emergencies?")
-
-**Reality**: KG performed **worst** across all query types due to:
-- Chinese NER inadequacy (couldn't extract "防汛指挥部", "责任人" properly)
-- LlamaIndex's graph construction optimized for English Wikipedia-style text
-- Regulatory documents lack natural graph structure (more tree/hierarchy)
-
-**Lesson**: KG ≠ Universal upgrade. Requires domain-specific entity schema.
-
-#### 3. Test Question Quality Assessment
-
-**Coverage Analysis (8 questions)**:
-- ✅ Numerical queries: 2 (Q1, Q6)
-- ✅ Enumeration: 2 (Q2, Q5)
-- ✅ Rules/Standards: 2 (Q3, Q4)
-- ⚠️ Multi-hop reasoning: Only 1 (Q8) - **Insufficient**
-- ❌ Semantic variations: 0 - **Missing**
-- ❌ Counter-factual: 0 - **Missing**
-
-**Recommendations**:
-1. Add 12+ questions (total 20-30)
-2. Include 5+ multi-hop queries (e.g., "If reservoir reaches 299m, who mobilizes which team?")
-3. Test semantic robustness ("汛限水位" vs "防洪控制水位")
-4. Add negative cases ("常庄水库的汛限水位?" → Should return "Document about 杨家横, not 常庄")
-
-### 🏆 Overall Ranking (Phase 2)
-
-1. 🥇 **Baseline** - Fastest, most accurate, zero setup cost
-2. 🥈 **CR Enhanced** - Slower and less accurate on structured text
-3. 🥉 **Knowledge Graph** - Slowest, poorest retrieval quality, needs major fixes
-
----
-
-## 🚀 Quickstart (Copy & Run)
-
-### Prerequisites
-- Python 3.11+
-- [Ollama](https://ollama.com/download) installed
-- `gemma3:12b` (for QA) and `gemma2:2b` (for context)
-
-### 1️⃣ Setup (Universal)
-
-```bash
-git clone https://github.com/roclee2692/contextual-retrieval-by-anthropic.git
-cd contextual-retrieval-by-anthropic
-pip install -r requirements.txt
-```
-
-### 2️⃣ Run Experiments (Unified Script)
-
-**Option A: Canteen Experiment (Original Phase 1)**
-```bash
-# Switch config, build DB, and run test - all in one command
-python run_experiment.py canteen --build --test
-```
-
-**Option B: Flood Experiment (New Phase 2)**
-```bash
-# Run complete three-way comparison (Baseline vs CR vs KG)
-python scripts/phase2_three_way_comparison.py
-
-# Or run individual experiments
-python run_experiment.py flood --test  # CR only
-python scripts/test_kg_retrieval.py    # KG only
-```
-
-**Manual Mode (Advanced)**
-```bash
-# Step 1: Switch config manually
-Copy-Item .env.canteen .env  # Or .env.flood
-
-# Step 2: Build database
-python scripts/create_save_db.py
-
-# Step 3: Run test
-python scripts/test_ab_simple.py  # For canteen
-python scripts/run_flood_comparison.py  # For flood
-```
-
----
-
-## 📁 Project Structure
+## 📁 Directory Structure
 
 ```
 contextual-retrieval-by-anthropic/
-├── .env                    # Active Config
-├── .env.canteen            # Config for Exp 1 (Canteen)
-├── .env.flood              # Config for Exp 2 (Flood)
-├── data/                   # Dataset Folder
-├── src/                    # Core Logic
-│   ├── contextual_retrieval/
-│   ├── db/                 # Vector/BM25/Graph Stores
-│   └── tools/
-└── scripts/                # Experiment Scripts
-    ├── test_ab_simple.py       # Canteen Test
-    ├── test_kg_retrieval.py    # Flood KG Test
-    └── ...
+├── README.md / README_CN.md    # Project documentation
+├── requirements.txt            # Python dependencies
+├── data/                       # Datasets (PDF files)
+│   ├── 防洪预案/               # Flood prevention plans (Chinese)
+│   └── 水利文件/               # Water resources documents
+├── src/                        # Core code
+│   ├── contextual_retrieval/   # CR core implementation
+│   │   ├── save_vectordb.py    # Vector database construction
+│   │   ├── save_bm25.py        # BM25 index
+│   │   └── save_contextual_retrieval.py  # CR context generation
+│   ├── schema/                 # Knowledge Graph Schema
+│   │   └── flood_schema.py     # Flood domain definitions
+│   └── db/                     # Database storage (gitignore)
+├── scripts/                    # Execution scripts
+│   ├── create_save_db.py       # Build database
+│   ├── test_ab_simple.py       # Phase 1 A/B test
+│   ├── phase2_three_way_comparison.py  # Phase 2 three-way comparison
+│   ├── phase3_baseline_vs_cr.py        # Phase 3 dual comparison
+│   ├── analyze_experiment_validity.py  # Statistical analysis
+│   ├── create_knowledge_graph.py       # Build knowledge graph
+│   └── visualize_kg.py         # Knowledge graph visualization
+├── results/                    # Experiment results
+│   ├── phase3_baseline_vs_cr.md  # Phase 3 report
+│   └── *.json / *.txt          # Detailed data
+└── docs/                       # Additional documentation
 ```
+
+---
+
+## 📊 Summary: Core Findings Across Three Phases
+
+| Phase | Data Characteristics | CR Effect | KG Effect | Core Conclusion |
+|-------|---------------------|-----------|-----------|-----------------|
+| **Phase 1** | Structured Lists (Canteen) | ✅ Strong disambiguation / ❌ Info loss | ✅ Effective | CR is double-edged |
+| **Phase 2** | Self-contained Docs (Flood) | ⚠️ Equal to Baseline | ❌ Ineffective | Docs don't need CR |
+| **Phase 3** | Same as Phase 2 + OneKE | ⚠️ Significant but small improvement | ❌ Model capability insufficient | Need dedicated extraction models |
+
+### Academic Value
+
+1. **First Systematic Validation** of CR's applicability boundaries in Chinese vertical domains
+2. **Discovered CR's "Self-Contained Paradox"**: For well-structured documents, CR becomes noise instead
+3. **Revealed General LLM Knowledge Extraction Limitations**: Dedicated models (like OneKE) are needed but still have bottlenecks
 
 ---
 
 ## 📧 Contact
 
-**Author**: roclee2692
+**Author**: roclee2692  
 **GitHub**: [@roclee2692](https://github.com/roclee2692)
 
 **If this project helps you, please give it a ⭐️ Star!**
-
----
-
-## 📚 Citation
-
-If you use this project in your research, please cite:
-
-```bibtex
-@software{contextual_retrieval_structured_data,
-  author = {roclee2692},
-  title = {Contextual Retrieval on Structured Data: A Reproducible Experiment},
-  year = {2026},
-  url = {https://github.com/roclee2692/contextual-retrieval-by-anthropic}
-}
-```
