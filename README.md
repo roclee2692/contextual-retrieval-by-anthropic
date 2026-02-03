@@ -267,11 +267,54 @@ python scripts/phase3_enhanced.py
 - ✅ **CR shows clear advantage on numerical queries** (80% → 90%)
 - ⚠️ **Improvement magnitude is still small** (~0.8%), practical significance depends on use case
 
+### � Ablation Study: Reranker Effect Validation
+
+To further validate retrieval optimization strategies, we conducted a **2×2 ablation study** introducing a Cross-Encoder Reranker.
+
+**Experiment Design**:
+- Factor A: Retrieval method (Baseline vs CR)
+- Factor B: Reranker (without vs with)
+- Reranker model: `BAAI/bge-reranker-base`
+
+```bash
+python scripts/phase3_reranker_ablation.py
+```
+
+#### 2×2 Ablation Results Table
+
+|  | Without Reranker | With Reranker | Reranker Boost |
+|--|------------------|---------------|----------------|
+| **Baseline** | 96.7% | 96.7% | +0.0% |
+| **CR** | 86.7% | **96.7%** | **+10.0%** |
+
+#### Average Score Comparison
+
+| Method | Avg Score | Retrieval Accuracy |
+|--------|-----------|--------------------|
+| Baseline | 0.5145 | 96.7% |
+| Baseline + Reranker | **0.9552** | 96.7% |
+| CR Enhanced | 0.5188 | 86.7% |
+| **CR + Reranker** | **0.9580** | **96.7%** |
+
+#### Statistical Tests
+
+| Comparison | t-value | p-value | Conclusion |
+|------------|---------|---------|------------|
+| Baseline → Baseline+RR | -17.14 | <0.001 | ✅ Reranker significantly improves scores |
+| CR → CR+RR | -17.13 | <0.001 | ✅ Reranker significantly improves scores |
+| Baseline vs CR+RR | -17.34 | <0.001 | ✅ CR+RR combination is optimal |
+
+#### Ablation Study Conclusions
+
+1. ✅ **Reranker is the most effective optimization** - Avg score improved from ~0.51 to ~0.96
+2. ✅ **Reranker levels the gap between Baseline and CR** - Both reach 96.7% with Reranker
+3. ✅ **CR relies more heavily on Reranker** - CR improved 10% while Baseline was already at 96.7%
+4. ⚠️ **On this dataset, CR's independent contribution is small** - Reranker is the main source of improvement
+
 ### 🔮 Future Improvement Directions
 
 1. **Table Structure Parsing**: Use LlamaParse or Unstructured.io to preserve table structure
 2. **Dedicated Extraction Models**: Wait for OneKE versions fine-tuned for vertical domains
-3. **Data Quality Improvement**: Improve PDF→TXT OCR quality
 
 ---
 

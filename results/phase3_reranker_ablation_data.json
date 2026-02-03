@@ -1,0 +1,1446 @@
+{
+  "timestamp": "2026-02-03T12:08:56.795770",
+  "experiments": {
+    "baseline": {
+      "name": "Baseline",
+      "has_reranker": false,
+      "n": 30,
+      "avg_score": 0.5145490396127239,
+      "std_score": 0.04906859286171116,
+      "accuracy": 0.9666666666666667,
+      "correct_count": 29,
+      "category_stats": {
+        "A-数值属性": {
+          "accuracy": 0.9,
+          "avg_score": 0.538230373885858,
+          "correct": 9,
+          "total": 10
+        },
+        "B-实体关系": {
+          "accuracy": 1.0,
+          "avg_score": 0.5179435166296031,
+          "correct": 10,
+          "total": 10
+        },
+        "C-流程条件": {
+          "accuracy": 1.0,
+          "avg_score": 0.4874732283227103,
+          "correct": 10,
+          "total": 10
+        }
+      },
+      "results": [
+        {
+          "id": "A01",
+          "query": "杨家横水库的汛限水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.6032459542056802,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A02",
+          "query": "常庄水库的总库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.4903491730085171,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A03",
+          "query": "杨家横水库的校核洪水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.5686899676865761,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A04",
+          "query": "常庄水库的兴利库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.46058191278624855,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A05",
+          "query": "杨家横水库大坝的坝顶高程是多少？",
+          "category": "A-数值属性",
+          "score": 0.5445255473378734,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A06",
+          "query": "常庄水库的设计洪水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.5636825712824771,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A07",
+          "query": "杨家横水库控制的流域面积是多少？",
+          "category": "A-数值属性",
+          "score": 0.5699563275202036,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A08",
+          "query": "常庄水库的死库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.4584866620633891,
+          "keyword_hit_rate": 0.5,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A09",
+          "query": "杨家横水库溢洪道的设计流量是多少？",
+          "category": "A-数值属性",
+          "score": 0.5785236215094212,
+          "keyword_hit_rate": 0.3333333333333333,
+          "retrieval_correct": false
+        },
+        {
+          "id": "A10",
+          "query": "常庄水库大坝的坝长是多少米？",
+          "category": "A-数值属性",
+          "score": 0.544262001458193,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B01",
+          "query": "杨家横水库的大坝安全责任人是谁？",
+          "category": "B-实体关系",
+          "score": 0.5116614790929832,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B02",
+          "query": "常庄水库防汛指挥部的指挥长是谁？",
+          "category": "B-实体关系",
+          "score": 0.5287482209577856,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B03",
+          "query": "杨家横水库由哪个单位管理？",
+          "category": "B-实体关系",
+          "score": 0.5849557589006038,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B04",
+          "query": "常庄水库的防汛抢险技术负责人是谁？",
+          "category": "B-实体关系",
+          "score": 0.5403222172952111,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B05",
+          "query": "杨家横水库位于哪条河流上？",
+          "category": "B-实体关系",
+          "score": 0.5332015918263755,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B06",
+          "query": "常庄水库下游主要保护哪些区域？",
+          "category": "B-实体关系",
+          "score": 0.4987376786973068,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B07",
+          "query": "杨家横水库的上级主管部门是什么？",
+          "category": "B-实体关系",
+          "score": 0.5105448475912187,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B08",
+          "query": "常庄水库建于哪一年？",
+          "category": "B-实体关系",
+          "score": 0.504734708613545,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B09",
+          "query": "谁负责防洪指挥部的统一调度？",
+          "category": "B-实体关系",
+          "score": 0.4446023161297535,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B10",
+          "query": "防汛物资由哪个部门负责储备？",
+          "category": "B-实体关系",
+          "score": 0.5219263471912495,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C01",
+          "query": "什么情况下需要启动III级应急响应？",
+          "category": "C-流程条件",
+          "score": 0.40570526194525397,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C02",
+          "query": "水库水位达到多少时需要开始泄洪？",
+          "category": "C-流程条件",
+          "score": 0.5389595113070358,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C03",
+          "query": "防洪抢险物资储备包括哪些东西？",
+          "category": "C-流程条件",
+          "score": 0.48884252707906134,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C04",
+          "query": "防汛抢险队伍由哪些部门组成？",
+          "category": "C-流程条件",
+          "score": 0.4974508806756861,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C05",
+          "query": "堤防巡查的具体步骤是什么？",
+          "category": "C-流程条件",
+          "score": 0.4526529059701894,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C06",
+          "query": "发现险情后应该如何报告？",
+          "category": "C-流程条件",
+          "score": 0.43683259815870534,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C07",
+          "query": "洪水预警信号有哪几个等级？",
+          "category": "C-流程条件",
+          "score": 0.5128965261390156,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C08",
+          "query": "群众转移安置的程序是什么？",
+          "category": "C-流程条件",
+          "score": 0.4377929166128035,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C09",
+          "query": "水库大坝出现裂缝应如何处理？",
+          "category": "C-流程条件",
+          "score": 0.5539318797245245,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C10",
+          "query": "防汛值班制度的具体要求是什么？",
+          "category": "C-流程条件",
+          "score": 0.5496672756148273,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        }
+      ]
+    },
+    "baseline_reranker": {
+      "name": "Baseline + Reranker",
+      "has_reranker": true,
+      "n": 30,
+      "avg_score": 0.955181426803271,
+      "std_score": 0.15538126547334202,
+      "accuracy": 0.9666666666666667,
+      "correct_count": 29,
+      "category_stats": {
+        "A-数值属性": {
+          "accuracy": 0.9,
+          "avg_score": 0.9976665258407593,
+          "correct": 9,
+          "total": 10
+        },
+        "B-实体关系": {
+          "accuracy": 1.0,
+          "avg_score": 0.9938497543334961,
+          "correct": 10,
+          "total": 10
+        },
+        "C-流程条件": {
+          "accuracy": 1.0,
+          "avg_score": 0.8740280002355576,
+          "correct": 10,
+          "total": 10
+        }
+      },
+      "results": [
+        {
+          "id": "A01",
+          "query": "杨家横水库的汛限水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.9994664788246155,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A02",
+          "query": "常庄水库的总库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.9991080164909363,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A03",
+          "query": "杨家横水库的校核洪水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.9995391368865967,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A04",
+          "query": "常庄水库的兴利库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.9984588623046875,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A05",
+          "query": "杨家横水库大坝的坝顶高程是多少？",
+          "category": "A-数值属性",
+          "score": 0.9998010993003845,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A06",
+          "query": "常庄水库的设计洪水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.9994978904724121,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A07",
+          "query": "杨家横水库控制的流域面积是多少？",
+          "category": "A-数值属性",
+          "score": 0.9994264841079712,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A08",
+          "query": "常庄水库的死库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.9849070310592651,
+          "keyword_hit_rate": 0.5,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A09",
+          "query": "杨家横水库溢洪道的设计流量是多少？",
+          "category": "A-数值属性",
+          "score": 0.997361958026886,
+          "keyword_hit_rate": 0.3333333333333333,
+          "retrieval_correct": false
+        },
+        {
+          "id": "A10",
+          "query": "常庄水库大坝的坝长是多少米？",
+          "category": "A-数值属性",
+          "score": 0.9990983009338379,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B01",
+          "query": "杨家横水库的大坝安全责任人是谁？",
+          "category": "B-实体关系",
+          "score": 0.9828739762306213,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B02",
+          "query": "常庄水库防汛指挥部的指挥长是谁？",
+          "category": "B-实体关系",
+          "score": 0.9990246295928955,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B03",
+          "query": "杨家横水库由哪个单位管理？",
+          "category": "B-实体关系",
+          "score": 0.9981620907783508,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B04",
+          "query": "常庄水库的防汛抢险技术负责人是谁？",
+          "category": "B-实体关系",
+          "score": 0.9991951584815979,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B05",
+          "query": "杨家横水库位于哪条河流上？",
+          "category": "B-实体关系",
+          "score": 0.9986670017242432,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B06",
+          "query": "常庄水库下游主要保护哪些区域？",
+          "category": "B-实体关系",
+          "score": 0.9872631430625916,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B07",
+          "query": "杨家横水库的上级主管部门是什么？",
+          "category": "B-实体关系",
+          "score": 0.9979572296142578,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B08",
+          "query": "常庄水库建于哪一年？",
+          "category": "B-实体关系",
+          "score": 0.9991973042488098,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B09",
+          "query": "谁负责防洪指挥部的统一调度？",
+          "category": "B-实体关系",
+          "score": 0.9806066155433655,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B10",
+          "query": "防汛物资由哪个部门负责储备？",
+          "category": "B-实体关系",
+          "score": 0.9955503940582275,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C01",
+          "query": "什么情况下需要启动III级应急响应？",
+          "category": "C-流程条件",
+          "score": 0.13868114352226257,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C02",
+          "query": "水库水位达到多少时需要开始泄洪？",
+          "category": "C-流程条件",
+          "score": 0.992150068283081,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C03",
+          "query": "防洪抢险物资储备包括哪些东西？",
+          "category": "C-流程条件",
+          "score": 0.9651319980621338,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C04",
+          "query": "防汛抢险队伍由哪些部门组成？",
+          "category": "C-流程条件",
+          "score": 0.991898775100708,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C05",
+          "query": "堤防巡查的具体步骤是什么？",
+          "category": "C-流程条件",
+          "score": 0.9726768136024475,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C06",
+          "query": "发现险情后应该如何报告？",
+          "category": "C-流程条件",
+          "score": 0.9563120007514954,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C07",
+          "query": "洪水预警信号有哪几个等级？",
+          "category": "C-流程条件",
+          "score": 0.8446803092956543,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C08",
+          "query": "群众转移安置的程序是什么？",
+          "category": "C-流程条件",
+          "score": 0.8840257525444031,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C09",
+          "query": "水库大坝出现裂缝应如何处理？",
+          "category": "C-流程条件",
+          "score": 0.9983235001564026,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C10",
+          "query": "防汛值班制度的具体要求是什么？",
+          "category": "C-流程条件",
+          "score": 0.9963996410369873,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        }
+      ]
+    },
+    "cr": {
+      "name": "CR Enhanced",
+      "has_reranker": false,
+      "n": 30,
+      "avg_score": 0.5187784051960732,
+      "std_score": 0.04881888248176248,
+      "accuracy": 0.8666666666666667,
+      "correct_count": 26,
+      "category_stats": {
+        "A-数值属性": {
+          "accuracy": 0.9,
+          "avg_score": 0.542717310955286,
+          "correct": 9,
+          "total": 10
+        },
+        "B-实体关系": {
+          "accuracy": 0.8,
+          "avg_score": 0.520206485470043,
+          "correct": 8,
+          "total": 10
+        },
+        "C-流程条件": {
+          "accuracy": 0.9,
+          "avg_score": 0.49341141916289033,
+          "correct": 9,
+          "total": 10
+        }
+      },
+      "results": [
+        {
+          "id": "A01",
+          "query": "杨家横水库的汛限水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.6105544753303573,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A02",
+          "query": "常庄水库的总库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.49760250618756047,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A03",
+          "query": "杨家横水库的校核洪水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.5686899676865761,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A04",
+          "query": "常庄水库的兴利库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.4659944132940142,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A05",
+          "query": "杨家横水库大坝的坝顶高程是多少？",
+          "category": "A-数值属性",
+          "score": 0.5475237059283229,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A06",
+          "query": "常庄水库的设计洪水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.5746113652581357,
+          "keyword_hit_rate": 0.5,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A07",
+          "query": "杨家横水库控制的流域面积是多少？",
+          "category": "A-数值属性",
+          "score": 0.5727246844121857,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A08",
+          "query": "常庄水库的死库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.46551525586194703,
+          "keyword_hit_rate": 0.5,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A09",
+          "query": "杨家横水库溢洪道的设计流量是多少？",
+          "category": "A-数值属性",
+          "score": 0.5796947341355675,
+          "keyword_hit_rate": 0.3333333333333333,
+          "retrieval_correct": false
+        },
+        {
+          "id": "A10",
+          "query": "常庄水库大坝的坝长是多少米？",
+          "category": "A-数值属性",
+          "score": 0.544262001458193,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B01",
+          "query": "杨家横水库的大坝安全责任人是谁？",
+          "category": "B-实体关系",
+          "score": 0.5186671409252092,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B02",
+          "query": "常庄水库防汛指挥部的指挥长是谁？",
+          "category": "B-实体关系",
+          "score": 0.5287482209577856,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B03",
+          "query": "杨家横水库由哪个单位管理？",
+          "category": "B-实体关系",
+          "score": 0.5941635052453117,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B04",
+          "query": "常庄水库的防汛抢险技术负责人是谁？",
+          "category": "B-实体关系",
+          "score": 0.5403222172952111,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B05",
+          "query": "杨家横水库位于哪条河流上？",
+          "category": "B-实体关系",
+          "score": 0.5332015918263755,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B06",
+          "query": "常庄水库下游主要保护哪些区域？",
+          "category": "B-实体关系",
+          "score": 0.4987376786973068,
+          "keyword_hit_rate": 0.3333333333333333,
+          "retrieval_correct": false
+        },
+        {
+          "id": "B07",
+          "query": "杨家横水库的上级主管部门是什么？",
+          "category": "B-实体关系",
+          "score": 0.5169611278186833,
+          "keyword_hit_rate": 0.3333333333333333,
+          "retrieval_correct": false
+        },
+        {
+          "id": "B08",
+          "query": "常庄水库建于哪一年？",
+          "category": "B-实体关系",
+          "score": 0.504734708613545,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B09",
+          "query": "谁负责防洪指挥部的统一调度？",
+          "category": "B-实体关系",
+          "score": 0.4446023161297535,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B10",
+          "query": "防汛物资由哪个部门负责储备？",
+          "category": "B-实体关系",
+          "score": 0.5219263471912495,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C01",
+          "query": "什么情况下需要启动III级应急响应？",
+          "category": "C-流程条件",
+          "score": 0.41191558417907664,
+          "keyword_hit_rate": 0.3333333333333333,
+          "retrieval_correct": false
+        },
+        {
+          "id": "C02",
+          "query": "水库水位达到多少时需要开始泄洪？",
+          "category": "C-流程条件",
+          "score": 0.5389595113070358,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C03",
+          "query": "防洪抢险物资储备包括哪些东西？",
+          "category": "C-流程条件",
+          "score": 0.48899286944727455,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C04",
+          "query": "防汛抢险队伍由哪些部门组成？",
+          "category": "C-流程条件",
+          "score": 0.5039458474057492,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C05",
+          "query": "堤防巡查的具体步骤是什么？",
+          "category": "C-流程条件",
+          "score": 0.4604916018594096,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C06",
+          "query": "发现险情后应该如何报告？",
+          "category": "C-流程条件",
+          "score": 0.4513586841190967,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C07",
+          "query": "洪水预警信号有哪几个等级？",
+          "category": "C-流程条件",
+          "score": 0.5187397652753601,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C08",
+          "query": "群众转移安置的程序是什么？",
+          "category": "C-流程条件",
+          "score": 0.4397499284983969,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C09",
+          "query": "水库大坝出现裂缝应如何处理？",
+          "category": "C-流程条件",
+          "score": 0.570293123922676,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C10",
+          "query": "防汛值班制度的具体要求是什么？",
+          "category": "C-流程条件",
+          "score": 0.5496672756148273,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        }
+      ]
+    },
+    "cr_reranker": {
+      "name": "CR + Reranker",
+      "has_reranker": true,
+      "n": 30,
+      "avg_score": 0.9579889386892319,
+      "std_score": 0.1543607294046582,
+      "accuracy": 0.9666666666666667,
+      "correct_count": 29,
+      "category_stats": {
+        "A-数值属性": {
+          "accuracy": 0.9,
+          "avg_score": 0.9976665139198303,
+          "correct": 9,
+          "total": 10
+        },
+        "B-实体关系": {
+          "accuracy": 1.0,
+          "avg_score": 0.9941675961017609,
+          "correct": 10,
+          "total": 10
+        },
+        "C-流程条件": {
+          "accuracy": 1.0,
+          "avg_score": 0.8821327060461044,
+          "correct": 10,
+          "total": 10
+        }
+      },
+      "results": [
+        {
+          "id": "A01",
+          "query": "杨家横水库的汛限水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.9994664788246155,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A02",
+          "query": "常庄水库的总库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.9991080164909363,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A03",
+          "query": "杨家横水库的校核洪水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.9995391368865967,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A04",
+          "query": "常庄水库的兴利库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.9984588623046875,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A05",
+          "query": "杨家横水库大坝的坝顶高程是多少？",
+          "category": "A-数值属性",
+          "score": 0.9998010993003845,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A06",
+          "query": "常庄水库的设计洪水位是多少？",
+          "category": "A-数值属性",
+          "score": 0.9994978904724121,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A07",
+          "query": "杨家横水库控制的流域面积是多少？",
+          "category": "A-数值属性",
+          "score": 0.9994264841079712,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A08",
+          "query": "常庄水库的死库容是多少？",
+          "category": "A-数值属性",
+          "score": 0.9849070310592651,
+          "keyword_hit_rate": 0.5,
+          "retrieval_correct": true
+        },
+        {
+          "id": "A09",
+          "query": "杨家横水库溢洪道的设计流量是多少？",
+          "category": "A-数值属性",
+          "score": 0.9973618388175964,
+          "keyword_hit_rate": 0.3333333333333333,
+          "retrieval_correct": false
+        },
+        {
+          "id": "A10",
+          "query": "常庄水库大坝的坝长是多少米？",
+          "category": "A-数值属性",
+          "score": 0.9990983009338379,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B01",
+          "query": "杨家横水库的大坝安全责任人是谁？",
+          "category": "B-实体关系",
+          "score": 0.9828739762306213,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B02",
+          "query": "常庄水库防汛指挥部的指挥长是谁？",
+          "category": "B-实体关系",
+          "score": 0.9990246295928955,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B03",
+          "query": "杨家横水库由哪个单位管理？",
+          "category": "B-实体关系",
+          "score": 0.9981620907783508,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B04",
+          "query": "常庄水库的防汛抢险技术负责人是谁？",
+          "category": "B-实体关系",
+          "score": 0.9991951584815979,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B05",
+          "query": "杨家横水库位于哪条河流上？",
+          "category": "B-实体关系",
+          "score": 0.9986670017242432,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B06",
+          "query": "常庄水库下游主要保护哪些区域？",
+          "category": "B-实体关系",
+          "score": 0.9904415607452393,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B07",
+          "query": "杨家横水库的上级主管部门是什么？",
+          "category": "B-实体关系",
+          "score": 0.9979572296142578,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B08",
+          "query": "常庄水库建于哪一年？",
+          "category": "B-实体关系",
+          "score": 0.9991973042488098,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B09",
+          "query": "谁负责防洪指挥部的统一调度？",
+          "category": "B-实体关系",
+          "score": 0.9806066155433655,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "B10",
+          "query": "防汛物资由哪个部门负责储备？",
+          "category": "B-实体关系",
+          "score": 0.9955503940582275,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C01",
+          "query": "什么情况下需要启动III级应急响应？",
+          "category": "C-流程条件",
+          "score": 0.13868150115013123,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C02",
+          "query": "水库水位达到多少时需要开始泄洪？",
+          "category": "C-流程条件",
+          "score": 0.9859451651573181,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C03",
+          "query": "防洪抢险物资储备包括哪些东西？",
+          "category": "C-流程条件",
+          "score": 0.9651318788528442,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C04",
+          "query": "防汛抢险队伍由哪些部门组成？",
+          "category": "C-流程条件",
+          "score": 0.991898775100708,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C05",
+          "query": "堤防巡查的具体步骤是什么？",
+          "category": "C-流程条件",
+          "score": 0.9938991069793701,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C06",
+          "query": "发现险情后应该如何报告？",
+          "category": "C-流程条件",
+          "score": 0.9563118815422058,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C07",
+          "query": "洪水预警信号有哪几个等级？",
+          "category": "C-流程条件",
+          "score": 0.9107100963592529,
+          "keyword_hit_rate": 0.6666666666666666,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C08",
+          "query": "群众转移安置的程序是什么？",
+          "category": "C-流程条件",
+          "score": 0.884025514125824,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C09",
+          "query": "水库大坝出现裂缝应如何处理？",
+          "category": "C-流程条件",
+          "score": 0.9983235001564026,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        },
+        {
+          "id": "C10",
+          "query": "防汛值班制度的具体要求是什么？",
+          "category": "C-流程条件",
+          "score": 0.9963996410369873,
+          "keyword_hit_rate": 1.0,
+          "retrieval_correct": true
+        }
+      ]
+    }
+  },
+  "analysis": {
+    "baseline_vs_cr": {
+      "t": -5.012116146613432,
+      "p": 2.4526204595836284e-05,
+      "significant": "True"
+    },
+    "baseline_reranker_effect": {
+      "t": -17.1367140173969,
+      "p": 1.0325351059196624e-16,
+      "significant": "True"
+    },
+    "cr_reranker_effect": {
+      "t": -17.13102035335223,
+      "p": 1.0416596806799204e-16,
+      "significant": "True"
+    },
+    "baseline_vs_cr_reranker": {
+      "t": -17.340127226371266,
+      "p": 7.552284760287709e-17,
+      "significant": "True"
+    },
+    "sign_test": {
+      "wins": 29,
+      "losses": 1,
+      "ties": 0
+    }
+  },
+  "queries": [
+    {
+      "id": "A01",
+      "query": "杨家横水库的汛限水位是多少？",
+      "category": "A-数值属性",
+      "expected_answer": "298.50m或相近数值",
+      "keywords": [
+        "汛限水位",
+        "298",
+        "水位"
+      ]
+    },
+    {
+      "id": "A02",
+      "query": "常庄水库的总库容是多少？",
+      "category": "A-数值属性",
+      "expected_answer": "1740万立方米",
+      "keywords": [
+        "总库容",
+        "1740",
+        "万"
+      ]
+    },
+    {
+      "id": "A03",
+      "query": "杨家横水库的校核洪水位是多少？",
+      "category": "A-数值属性",
+      "expected_answer": "304.80m或相近数值",
+      "keywords": [
+        "校核",
+        "洪水位",
+        "304"
+      ]
+    },
+    {
+      "id": "A04",
+      "query": "常庄水库的兴利库容是多少？",
+      "category": "A-数值属性",
+      "expected_answer": "700万立方米左右",
+      "keywords": [
+        "兴利库容",
+        "700",
+        "万"
+      ]
+    },
+    {
+      "id": "A05",
+      "query": "杨家横水库大坝的坝顶高程是多少？",
+      "category": "A-数值属性",
+      "expected_answer": "306m左右",
+      "keywords": [
+        "坝顶",
+        "高程",
+        "306"
+      ]
+    },
+    {
+      "id": "A06",
+      "query": "常庄水库的设计洪水位是多少？",
+      "category": "A-数值属性",
+      "expected_answer": "具体数值",
+      "keywords": [
+        "设计",
+        "洪水位"
+      ]
+    },
+    {
+      "id": "A07",
+      "query": "杨家横水库控制的流域面积是多少？",
+      "category": "A-数值属性",
+      "expected_answer": "平方公里数值",
+      "keywords": [
+        "流域面积",
+        "平方公里",
+        "km"
+      ]
+    },
+    {
+      "id": "A08",
+      "query": "常庄水库的死库容是多少？",
+      "category": "A-数值属性",
+      "expected_answer": "万立方米数值",
+      "keywords": [
+        "死库容",
+        "万"
+      ]
+    },
+    {
+      "id": "A09",
+      "query": "杨家横水库溢洪道的设计流量是多少？",
+      "category": "A-数值属性",
+      "expected_answer": "立方米每秒",
+      "keywords": [
+        "溢洪道",
+        "流量",
+        "m³/s"
+      ]
+    },
+    {
+      "id": "A10",
+      "query": "常庄水库大坝的坝长是多少米？",
+      "category": "A-数值属性",
+      "expected_answer": "米数值",
+      "keywords": [
+        "坝长",
+        "米",
+        "m"
+      ]
+    },
+    {
+      "id": "B01",
+      "query": "杨家横水库的大坝安全责任人是谁？",
+      "category": "B-实体关系",
+      "expected_answer": "具体人名",
+      "keywords": [
+        "责任人",
+        "安全",
+        "负责"
+      ]
+    },
+    {
+      "id": "B02",
+      "query": "常庄水库防汛指挥部的指挥长是谁？",
+      "category": "B-实体关系",
+      "expected_answer": "副市长或具体职务",
+      "keywords": [
+        "指挥长",
+        "防汛",
+        "指挥部"
+      ]
+    },
+    {
+      "id": "B03",
+      "query": "杨家横水库由哪个单位管理？",
+      "category": "B-实体关系",
+      "expected_answer": "管理处或管理单位名称",
+      "keywords": [
+        "管理",
+        "单位",
+        "处"
+      ]
+    },
+    {
+      "id": "B04",
+      "query": "常庄水库的防汛抢险技术负责人是谁？",
+      "category": "B-实体关系",
+      "expected_answer": "具体人名或职务",
+      "keywords": [
+        "技术",
+        "负责",
+        "抢险"
+      ]
+    },
+    {
+      "id": "B05",
+      "query": "杨家横水库位于哪条河流上？",
+      "category": "B-实体关系",
+      "expected_answer": "河流名称",
+      "keywords": [
+        "河流",
+        "位于",
+        "河"
+      ]
+    },
+    {
+      "id": "B06",
+      "query": "常庄水库下游主要保护哪些区域？",
+      "category": "B-实体关系",
+      "expected_answer": "保护区域名称",
+      "keywords": [
+        "下游",
+        "保护",
+        "区域"
+      ]
+    },
+    {
+      "id": "B07",
+      "query": "杨家横水库的上级主管部门是什么？",
+      "category": "B-实体关系",
+      "expected_answer": "水利局或相关部门",
+      "keywords": [
+        "主管",
+        "部门",
+        "上级"
+      ]
+    },
+    {
+      "id": "B08",
+      "query": "常庄水库建于哪一年？",
+      "category": "B-实体关系",
+      "expected_answer": "年份",
+      "keywords": [
+        "建",
+        "年",
+        "建成"
+      ]
+    },
+    {
+      "id": "B09",
+      "query": "谁负责防洪指挥部的统一调度？",
+      "category": "B-实体关系",
+      "expected_answer": "行政首长或具体职务",
+      "keywords": [
+        "调度",
+        "统一",
+        "负责"
+      ]
+    },
+    {
+      "id": "B10",
+      "query": "防汛物资由哪个部门负责储备？",
+      "category": "B-实体关系",
+      "expected_answer": "部门名称",
+      "keywords": [
+        "物资",
+        "储备",
+        "部门"
+      ]
+    },
+    {
+      "id": "C01",
+      "query": "什么情况下需要启动III级应急响应？",
+      "category": "C-流程条件",
+      "expected_answer": "水位或雨量条件",
+      "keywords": [
+        "III级",
+        "响应",
+        "启动"
+      ]
+    },
+    {
+      "id": "C02",
+      "query": "水库水位达到多少时需要开始泄洪？",
+      "category": "C-流程条件",
+      "expected_answer": "水位数值和条件",
+      "keywords": [
+        "泄洪",
+        "水位",
+        "开始"
+      ]
+    },
+    {
+      "id": "C03",
+      "query": "防洪抢险物资储备包括哪些东西？",
+      "category": "C-流程条件",
+      "expected_answer": "物资清单",
+      "keywords": [
+        "物资",
+        "储备",
+        "包括"
+      ]
+    },
+    {
+      "id": "C04",
+      "query": "防汛抢险队伍由哪些部门组成？",
+      "category": "C-流程条件",
+      "expected_answer": "部门列表",
+      "keywords": [
+        "队伍",
+        "组成",
+        "部门"
+      ]
+    },
+    {
+      "id": "C05",
+      "query": "堤防巡查的具体步骤是什么？",
+      "category": "C-流程条件",
+      "expected_answer": "巡查步骤描述",
+      "keywords": [
+        "巡查",
+        "步骤",
+        "检查"
+      ]
+    },
+    {
+      "id": "C06",
+      "query": "发现险情后应该如何报告？",
+      "category": "C-流程条件",
+      "expected_answer": "报告流程",
+      "keywords": [
+        "险情",
+        "报告",
+        "上报"
+      ]
+    },
+    {
+      "id": "C07",
+      "query": "洪水预警信号有哪几个等级？",
+      "category": "C-流程条件",
+      "expected_answer": "等级划分",
+      "keywords": [
+        "预警",
+        "等级",
+        "信号"
+      ]
+    },
+    {
+      "id": "C08",
+      "query": "群众转移安置的程序是什么？",
+      "category": "C-流程条件",
+      "expected_answer": "转移程序",
+      "keywords": [
+        "转移",
+        "安置",
+        "群众"
+      ]
+    },
+    {
+      "id": "C09",
+      "query": "水库大坝出现裂缝应如何处理？",
+      "category": "C-流程条件",
+      "expected_answer": "处理措施",
+      "keywords": [
+        "裂缝",
+        "处理",
+        "措施"
+      ]
+    },
+    {
+      "id": "C10",
+      "query": "防汛值班制度的具体要求是什么？",
+      "category": "C-流程条件",
+      "expected_answer": "值班要求",
+      "keywords": [
+        "值班",
+        "制度",
+        "要求"
+      ]
+    }
+  ]
+}
