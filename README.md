@@ -203,38 +203,61 @@ In actual experiments, we discovered **the following issues with OneKE model**:
 | **Insufficient Domain Adaptation** | OneKE mainly trained on general domains, poor recognition of flood prevention terminology | Entity recognition errors |
 | **Hardware Limitations** | 13B model requires Q4 quantization on 8GB VRAM, affecting precision | Quality degradation |
 
-### Phase 3 Alternative: Baseline vs CR Statistical Validation
+### Phase 3 Alternative: Baseline vs CR Statistical Validation (Enhanced, n=30)
 
-Since the KG approach is temporarily infeasible, we pivoted to more rigorous statistical validation of **Baseline vs CR**:
+Since the KG approach is temporarily infeasible, we pivoted to more rigorous statistical validation of **Baseline vs CR**.
+
+**Enhancements**:
+1. Expanded test questions from n=10 to **n=30** (3 categories, 10 each)
+2. Added "**Retrieval Accuracy**" metric (based on keyword hit rate)
 
 ```bash
-python scripts/phase3_baseline_vs_cr.py
-python scripts/analyze_experiment_validity.py
+python scripts/phase3_enhanced.py
 ```
 
-#### Statistical Analysis Results
+#### Question Category Design
 
-| Metric | Value | Interpretation |
-|--------|-------|----------------|
-| **Sample Size** | 10 questions | Small, needs expansion |
-| **Mean Difference** | +0.006 (CR slightly better) | 1.1% improvement |
-| **t-statistic** | 3.95 | > critical value 2.262 |
-| **p-value** | < 0.05 | ✅ Statistically significant |
-| **Cohen's d** | 1.25 | Large effect size |
-| **Sign Test** | 8 wins/0 losses/2 ties | Strong CR consistency |
+| Category | Count | Description | Tests |
+|----------|-------|-------------|-------|
+| A-Numerical | 10 | Water levels, capacity values | Exact matching |
+| B-Entity | 10 | Responsible persons, management units | Context association |
+| C-Process | 10 | Procedures, trigger conditions | Complete paragraphs |
+
+#### Statistical Analysis Results (2026-02-03)
+
+| Metric | Baseline | CR Enhanced | Difference |
+|--------|----------|-------------|------------|
+| **Sample Size** | n=30 | n=30 | - |
+| **Avg Similarity Score** | 0.5145 | 0.5188 | **+0.8%** |
+| **Retrieval Accuracy** | 76.7% (23/30) | 80.0% (24/30) | **+3.3%** |
+
+#### Results by Category
+
+| Category | Baseline Accuracy | CR Accuracy | Score Diff |
+|----------|-------------------|-------------|------------|
+| A-Numerical | 80% | **90%** | +0.004 |
+| B-Entity | 70% | 70% | +0.002 |
+| C-Process | 80% | 80% | +0.006 |
+
+#### Statistical Tests
+
+| Test Method | Result | Conclusion |
+|-------------|--------|------------|
+| **Paired t-test** | t=5.012, p<0.05 | ✅ Significant difference |
+| **Sign test** | CR wins 19, Baseline wins 0, Ties 11 | ✅ Strong CR consistency |
 
 #### Conclusion
 
-- ✅ **CR is indeed slightly better than Baseline** (statistically significant)
-- ⚠️ **Improvement magnitude is small** (only 1.1%)
-- ⚠️ **Limited sample size** (n=10), needs more testing to verify
+- ✅ **CR is statistically significantly better than Baseline** (t=5.012, p<0.05)
+- ✅ **Retrieval accuracy improved by 3.3%** (76.7% → 80.0%)
+- ✅ **CR shows clear advantage on numerical queries** (80% → 90%)
+- ⚠️ **Improvement magnitude is still small** (~0.8%), practical significance depends on use case
 
 ### 🔮 Future Improvement Directions
 
 1. **Table Structure Parsing**: Use LlamaParse or Unstructured.io to preserve table structure
 2. **Dedicated Extraction Models**: Wait for OneKE versions fine-tuned for vertical domains
 3. **Data Quality Improvement**: Improve PDF→TXT OCR quality
-4. **Expand Test Set**: Increase to 30-50 test questions
 
 ---
 
