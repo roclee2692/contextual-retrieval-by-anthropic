@@ -1,0 +1,148 @@
+{
+  "timestamp": "2026-02-03T12:34:04.274007",
+  "config": {
+    "vector_top_k": 10,
+    "bm25_top_k": 10,
+    "final_top_k": 3
+  },
+  "summary": {
+    "baseline_accuracy": 1.0,
+    "cr_accuracy": 0.8,
+    "baseline_wins": 2,
+    "cr_wins": 0,
+    "ties": 8,
+    "avg_doc_overlap": 0.0
+  },
+  "cases": [
+    {
+      "id": "A01",
+      "query": "杨家横水库的汛限水位是多少？",
+      "category": "A-数值属性",
+      "baseline_score": 0.6032459542056802,
+      "cr_score": 0.6105544753303573,
+      "baseline_hit_rate": 0.6666666666666666,
+      "cr_hit_rate": 0.6666666666666666,
+      "baseline_correct": true,
+      "cr_correct": true,
+      "winner": "平局",
+      "doc_overlap": 0.0
+    },
+    {
+      "id": "A03",
+      "query": "杨家横水库的校核洪水位是多少？",
+      "category": "A-数值属性",
+      "baseline_score": 0.5686899676865761,
+      "cr_score": 0.5686899676865761,
+      "baseline_hit_rate": 1.0,
+      "cr_hit_rate": 1.0,
+      "baseline_correct": true,
+      "cr_correct": true,
+      "winner": "平局",
+      "doc_overlap": 0.0
+    },
+    {
+      "id": "A07",
+      "query": "杨家横水库控制的流域面积是多少？",
+      "category": "A-数值属性",
+      "baseline_score": 0.5699563275202036,
+      "cr_score": 0.5727246844121857,
+      "baseline_hit_rate": 0.6666666666666666,
+      "cr_hit_rate": 0.6666666666666666,
+      "baseline_correct": true,
+      "cr_correct": true,
+      "winner": "平局",
+      "doc_overlap": 0.0
+    },
+    {
+      "id": "B01",
+      "query": "杨家横水库的大坝安全责任人是谁？",
+      "category": "B-实体关系",
+      "baseline_score": 0.5116614790929832,
+      "cr_score": 0.5186671409252092,
+      "baseline_hit_rate": 0.6666666666666666,
+      "cr_hit_rate": 0.6666666666666666,
+      "baseline_correct": true,
+      "cr_correct": true,
+      "winner": "平局",
+      "doc_overlap": 0.0
+    },
+    {
+      "id": "B03",
+      "query": "杨家横水库由哪个单位管理？",
+      "category": "B-实体关系",
+      "baseline_score": 0.5849557589006038,
+      "cr_score": 0.5941635052453117,
+      "baseline_hit_rate": 1.0,
+      "cr_hit_rate": 1.0,
+      "baseline_correct": true,
+      "cr_correct": true,
+      "winner": "平局",
+      "doc_overlap": 0.0
+    },
+    {
+      "id": "B05",
+      "query": "杨家横水库位于哪条河流上？",
+      "category": "B-实体关系",
+      "baseline_score": 0.5332015918263755,
+      "cr_score": 0.5332015918263755,
+      "baseline_hit_rate": 1.0,
+      "cr_hit_rate": 1.0,
+      "baseline_correct": true,
+      "cr_correct": true,
+      "winner": "平局",
+      "doc_overlap": 0.0
+    },
+    {
+      "id": "B06",
+      "query": "常庄水库下游主要保护哪些区域？",
+      "category": "B-实体关系",
+      "baseline_score": 0.4987376786973068,
+      "cr_score": 0.4987376786973068,
+      "baseline_hit_rate": 1.0,
+      "cr_hit_rate": 0.3333333333333333,
+      "baseline_correct": true,
+      "cr_correct": false,
+      "winner": "Baseline ✅",
+      "doc_overlap": 0.0
+    },
+    {
+      "id": "C01",
+      "query": "什么情况下需要启动III级应急响应？",
+      "category": "C-流程条件",
+      "baseline_score": 0.40570526194525397,
+      "cr_score": 0.41191558417907664,
+      "baseline_hit_rate": 0.6666666666666666,
+      "cr_hit_rate": 0.3333333333333333,
+      "baseline_correct": true,
+      "cr_correct": false,
+      "winner": "Baseline ✅",
+      "doc_overlap": 0.0
+    },
+    {
+      "id": "C03",
+      "query": "防洪抢险物资储备包括哪些东西？",
+      "category": "C-流程条件",
+      "baseline_score": 0.48884252707906134,
+      "cr_score": 0.48899286944727455,
+      "baseline_hit_rate": 1.0,
+      "cr_hit_rate": 1.0,
+      "baseline_correct": true,
+      "cr_correct": true,
+      "winner": "平局",
+      "doc_overlap": 0.0
+    },
+    {
+      "id": "C05",
+      "query": "堤防巡查的具体步骤是什么？",
+      "category": "C-流程条件",
+      "baseline_score": 0.4526529059701894,
+      "cr_score": 0.4604916018594096,
+      "baseline_hit_rate": 0.6666666666666666,
+      "cr_hit_rate": 0.6666666666666666,
+      "baseline_correct": true,
+      "cr_correct": true,
+      "winner": "平局",
+      "doc_overlap": 0.0
+    }
+  ]
+}

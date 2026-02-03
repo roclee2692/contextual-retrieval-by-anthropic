@@ -207,12 +207,14 @@ def init_retriever(vector_db_path, bm25_path, collection_name, name=""):
     
     vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
     vector_index = VectorStoreIndex.from_vector_store(vector_store, embed_model=embed_model)
-    vector_retriever = vector_index.as_retriever(similarity_top_k=10)  # 取 top-10 供 reranker 重排
+    # 统一配置：top_k=10
+    vector_retriever = vector_index.as_retriever(similarity_top_k=10)
     
     bm25_retriever = None
     if os.path.exists(bm25_path):
         try:
             bm25_retriever = BM25Retriever.from_persist_dir(bm25_path)
+            # 统一配置：top_k=10
             bm25_retriever._similarity_top_k = 10
             print(f"   ✓ BM25索引加载成功")
         except Exception as e:

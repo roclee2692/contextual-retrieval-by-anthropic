@@ -311,7 +311,40 @@ python scripts/phase3_reranker_ablation.py
 3. ✅ **CR relies more heavily on Reranker** - CR improved 10% while Baseline was already at 96.7%
 4. ⚠️ **On this dataset, CR's independent contribution is small** - Reranker is the main source of improvement
 
-### 🔮 Future Improvement Directions
+### � Validation Study: CR Context Quality Analysis
+
+To understand why CR underperforms on this dataset, we conducted case-level deep analysis.
+
+```bash
+python scripts/phase3_validation.py
+```
+
+#### Problems Discovered
+
+| Problem | Description | Impact |
+|---------|-------------|--------|
+| **CR context is in English** | Gemma3:12b generated English context for Chinese documents | Semantic matching interference |
+| **Context is too generic** | Generated generic descriptions rather than precise context | Failed to enhance retrieval |
+| **Document ID mismatch** | Baseline and CR use different UUIDs | Cannot precisely compare same documents |
+
+#### CR Context Example
+
+```
+# Baseline version (original)
+常庄水库防洪应急预案
+1 总  则...
+
+# CR version (with English context prepended)
+Frequently Asked Questions about Changzhuang Reservoir Flood Emergency Plan
+常庄水库防洪应急预案
+1 总  则...
+```
+
+#### Conclusion
+
+> **CR effectiveness highly depends on context generation quality.** When using small local LLMs (like Gemma3:12b) to generate context, due to model capability limitations, the generated context may be too generic or contain noise, actually reducing retrieval effectiveness. Reranker can effectively correct these errors.
+
+### �🔮 Future Improvement Directions
 
 1. **Table Structure Parsing**: Use LlamaParse or Unstructured.io to preserve table structure
 2. **Dedicated Extraction Models**: Wait for OneKE versions fine-tuned for vertical domains

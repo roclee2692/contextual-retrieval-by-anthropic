@@ -317,7 +317,40 @@ python scripts/phase3_reranker_ablation.py
 3. ✅ **CR 对 Reranker 的依赖更强** - CR 从 86.7% 提升 10%，而 Baseline 本身已经 96.7%
 4. ⚠️ **在本数据集上，CR 的独立贡献较小** - Reranker 是主要提升来源
 
-### 🔮 后续改进方向
+### � 验证实验：CR 上下文质量分析
+
+为理解 CR 在本数据集上效果不佳的原因，我们进行了 Case 级别的深入分析。
+
+```bash
+python scripts/phase3_validation.py
+```
+
+#### 发现的问题
+
+| 问题 | 描述 | 影响 |
+|------|------|------|
+| **CR 上下文是英文** | Gemma3:12b 生成的上下文是英文，与中文文档不匹配 | 语义匹配干扰 |
+| **上下文过于泛化** | 生成的是通用描述而非精准上下文 | 未能有效增强检索 |
+| **文档 ID 不一致** | Baseline 和 CR 使用不同的 UUID | 无法精确对比同一文档 |
+
+#### CR 上下文示例
+
+```
+# Baseline 版本（原文）
+常庄水库防洪应急预案
+1 总  则...
+
+# CR 版本（加了英文上下文）
+Frequently Asked Questions about Changzhuang Reservoir Flood Emergency Plan
+常庄水库防洪应急预案
+1 总  则...
+```
+
+#### 结论
+
+> **CR 的效果高度依赖于上下文生成的质量。** 当使用小型本地 LLM（如 Gemma3:12b）生成上下文时，由于模型能力限制，生成的上下文可能过于泛化或包含噪音，反而降低检索效果。Reranker 能够有效纠正这种错误。
+
+### �🔮 后续改进方向
 
 1. **人工标注验证**：对检索结果进行人工“答案正确性”标注
 2. **表格结构化解析**：使用 LlamaParse 或 Unstructured.io 保留表格结构
