@@ -203,6 +203,20 @@ In actual experiments, we discovered **the following issues with OneKE model**:
 | **Insufficient Domain Adaptation** | OneKE mainly trained on general domains, poor recognition of flood prevention terminology | Entity recognition errors |
 | **Hardware Limitations** | 13B model requires Q4 quantization on 8GB VRAM, affecting precision | Quality degradation |
 
+### ❌ Knowledge Graph Elimination Conclusion
+
+> **We did attempt the Knowledge Graph approach, but due to the technical bottlenecks described above, we decided to eliminate this approach in this phase.**
+
+**Reasons for Elimination**:
+1. **Insufficient Extraction Quality**: 2510 documents yielded only ~200 triplets, coverage rate below 10%, unable to support effective graph retrieval
+2. **Poor ROI**: Even with more debugging effort, without domain-specific fine-tuned models, significant improvement is unlikely
+3. **Research Focus Adjustment**: Concentrated limited resources on rigorous statistical validation of Baseline vs CR to ensure reliability of core conclusions
+
+**Potential Future Improvements** (beyond scope of this paper):
+- Use extraction models fine-tuned for water conservancy domain
+- Adopt human + rule-assisted triplet extraction
+- Wait for stronger open-source KG extraction models (e.g., OneKE vertical domain version)
+
 ### Phase 3 Alternative: Baseline vs CR Statistical Validation (Enhanced, n=30)
 
 Since the KG approach is temporarily infeasible, we pivoted to more rigorous statistical validation of **Baseline vs CR**.
