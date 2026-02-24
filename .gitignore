@@ -48,6 +48,9 @@ Thumbs.db
 temp/
 src/db/flood_prevention_db_vectordb/
 src/db/flood_prevention_db_bm25/
+src/db/flood_prevention_db_baseline_vectordb/
+src/db/flood_prevention_db_cr_vectordb/
+src/db/contextual_db_vectordb/
 src/db/context_cache.json
 
 # Data folders
