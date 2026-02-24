@@ -55,9 +55,8 @@ src/db/flood_prevention_db_cr_vectordb/
 src/db/contextual_db_vectordb/
 src/db/context_cache.json
 
-# Data folders
+# Data folders (only ignore water_files, allow 防洪预案 to be committed)
 data/水利文件/
-data/防洪预案/
 
 # Large model files
 models/
