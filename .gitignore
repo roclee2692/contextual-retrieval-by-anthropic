@@ -82,3 +82,16 @@ src/db/knowledge_graph_test/
 # Generated images
 knowledge_graph.png
 
+# Results and experiment artifacts (ignore large intermediate outputs)
+results/*.json
+results/*.txt
+
+# Transfer archives and temporary bundles
+project_transfer*.zip
+data_transfer*.zip
+data_en*.zip
+
+# Optional: ignore local one-off scripts produced during experiments
+scripts/phase3_*.py
+scripts/reranker_cost_analysis.py
+
