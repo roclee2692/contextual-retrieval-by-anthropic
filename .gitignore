@@ -16,8 +16,10 @@ src/db/knowledge_graph/
 cook_book_db_bm25/
 cook_book_db_vectordb/
 
-# Data (keep structure, ignore large files)
+# Data (keep structure, ignore large files - but allow 防洪预案/*.pdf as source data)
 data/*.pdf
+!data/防洪预案/
+!data/防洪预案/*.pdf
 data/processed/
 
 # Environment
