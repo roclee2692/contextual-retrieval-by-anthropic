@@ -26,7 +26,8 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 load_dotenv()
 sys.path.insert(0, str(Path(__file__).parents[1]))  # Add project root
 
-KG_DIR = "./src/db/knowledge_graph"
+ROOT = Path(__file__).resolve().parents[1]
+KG_DIR = str(ROOT / "src" / "db" / "knowledge_graph")
 
 def test_kg_retrieval():
     print("="*80)

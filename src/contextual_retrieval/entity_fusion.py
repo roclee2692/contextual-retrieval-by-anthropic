@@ -185,6 +185,9 @@ def normalize_entity(entity: str) -> str:
     """
     # 全角转半角
     entity = _full_to_half(entity.strip())
+    # 去除路径/文件名污染（如 "洪预案\\常庄水库" 或 "/data/.../常庄水库.pdf"）
+    entity = _strip_path_prefix(entity)
+    entity = _strip_file_ext(entity)
 
     # 查词表（先精确匹配）
     if entity in ALL_ALIASES:
@@ -221,8 +224,9 @@ def normalize_triplets(
     seen = set()
 
     for subj, pred, obj in triplets:
+        # 只归一化实体，不处理谓词，避免把关系名误映射为实体
         n_subj = normalize_entity(subj)
-        n_pred = normalize_entity(pred)
+        n_pred = pred
         n_obj = normalize_entity(obj)
 
         key = (n_subj, n_pred, n_obj)
@@ -293,6 +297,21 @@ def _full_to_half(text: str) -> str:
         else:
             result.append(char)
     return ''.join(result)
+
+
+def _strip_path_prefix(text: str) -> str:
+    """去除路径前缀，仅保留最后的文件/节点名片段"""
+    if "/" in text or "\\" in text:
+        parts = re.split(r"[\\/]+", text)
+        parts = [p for p in parts if p]
+        if parts:
+            return parts[-1]
+    return text
+
+
+def _strip_file_ext(text: str) -> str:
+    """去除常见文件后缀"""
+    return re.sub(r"\.(pdf|docx?|txt|md|html?)$", "", text, flags=re.IGNORECASE)
 
 
 def get_fusion_stats(
