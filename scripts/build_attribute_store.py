@@ -26,7 +26,8 @@ from src.attribute_store.extract import extract_facts
 def build_attribute_store():
     load_dotenv()
 
-    data_dir = os.getenv("DATA_DIR", "./data/防洪预案")
+    # Attribute store should use PDF directory; keep separate from vector DATA_DIR
+    data_dir = os.getenv("ATTRIBUTE_DATA_DIR", "./data/防洪预案")
     out_db = os.getenv("ATTRIBUTE_DB", str(ROOT / "src" / "db" / "attribute_store.sqlite"))
 
     print("=" * 72)

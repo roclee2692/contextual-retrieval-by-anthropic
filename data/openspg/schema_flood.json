@@ -1,0 +1,277 @@
+{
+  "schema_name": "FloodPrevention",
+  "types": [
+    {
+      "type_name": "ResponseEvent",
+      "name_zh": "响应事件",
+      "description": "防洪预案启动的响应级别或险情事件",
+      "key_properties": [
+        "level",
+        "trigger_condition",
+        "effective_time"
+      ],
+      "examples": [
+        "IV级响应",
+        "III级响应",
+        "洪水预警",
+        "水库漫坝险情"
+      ]
+    },
+    {
+      "type_name": "Organization",
+      "name_zh": "组织机构",
+      "description": "负责执行响应任务的部门、单位或岗位",
+      "key_properties": [
+        "name",
+        "level",
+        "contact"
+      ],
+      "examples": [
+        "防汛指挥部",
+        "水利局",
+        "乡镇政府",
+        "应急管理局"
+      ]
+    },
+    {
+      "type_name": "Role",
+      "name_zh": "职责角色",
+      "description": "具体职责岗位，如指挥员、联络员",
+      "key_properties": [
+        "name",
+        "affiliated_org"
+      ],
+      "examples": [
+        "防汛指挥长",
+        "技术负责人",
+        "现场联络员"
+      ]
+    },
+    {
+      "type_name": "Action",
+      "name_zh": "响应动作",
+      "description": "防洪响应中需执行的具体操作",
+      "key_properties": [
+        "action_type",
+        "target",
+        "deadline_hours"
+      ],
+      "examples": [
+        "上报",
+        "巡查",
+        "开闸泄洪",
+        "人员转移",
+        "启动响应"
+      ]
+    },
+    {
+      "type_name": "Threshold",
+      "name_zh": "阈值约束",
+      "description": "触发响应的数值条件（水位、流量、雨量、时限）",
+      "key_properties": [
+        "value",
+        "unit",
+        "threshold_type",
+        "comparison"
+      ],
+      "examples": [
+        "警戒水位113.5米",
+        "2小时内",
+        "降雨量50mm/h"
+      ]
+    },
+    {
+      "type_name": "Facility",
+      "name_zh": "水利设施",
+      "description": "水库、堤防、闸门、水文站等物理设施",
+      "key_properties": [
+        "name",
+        "location",
+        "capacity",
+        "alert_level"
+      ],
+      "examples": [
+        "某水库",
+        "某闸门",
+        "某堤防段",
+        "某水文站"
+      ]
+    },
+    {
+      "type_name": "Material",
+      "name_zh": "物资",
+      "description": "防洪应急所需的物资装备",
+      "key_properties": [
+        "name",
+        "quantity",
+        "unit",
+        "storage_location"
+      ],
+      "examples": [
+        "沙袋",
+        "救生艇",
+        "应急发电机",
+        "编织袋"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "relation_name": "triggered_by",
+      "name_zh": "触发",
+      "domain": [
+        "ResponseEvent",
+        "Action"
+      ],
+      "range": [
+        "Threshold",
+        "ResponseEvent"
+      ],
+      "examples": [
+        [
+          "IV级响应",
+          "triggered_by",
+          "水位达113.5米"
+        ],
+        [
+          "开闸泄洪",
+          "triggered_by",
+          "III级响应"
+        ]
+      ]
+    },
+    {
+      "relation_name": "execute",
+      "name_zh": "执行",
+      "domain": [
+        "Organization",
+        "Role"
+      ],
+      "range": [
+        "Action"
+      ],
+      "examples": [
+        [
+          "防汛指挥部",
+          "execute",
+          "发布预警"
+        ],
+        [
+          "乡镇政府",
+          "execute",
+          "人员转移"
+        ]
+      ]
+    },
+    {
+      "relation_name": "responsible",
+      "name_zh": "负责",
+      "domain": [
+        "Organization",
+        "Role"
+      ],
+      "range": [
+        "ResponseEvent",
+        "Facility",
+        "Action"
+      ],
+      "examples": [
+        [
+          "水利局",
+          "responsible",
+          "某水库"
+        ],
+        [
+          "防汛指挥部",
+          "responsible",
+          "IV级响应"
+        ]
+      ]
+    },
+    {
+      "relation_name": "deadline",
+      "name_zh": "时限",
+      "domain": [
+        "Action",
+        "ResponseEvent"
+      ],
+      "range": [
+        "Threshold"
+      ],
+      "examples": [
+        [
+          "上报",
+          "deadline",
+          "2小时内"
+        ],
+        [
+          "人员转移",
+          "deadline",
+          "6小时内"
+        ]
+      ]
+    },
+    {
+      "relation_name": "reference",
+      "name_zh": "依据",
+      "domain": [
+        "ResponseEvent",
+        "Action",
+        "Organization"
+      ],
+      "range": [
+        "Facility",
+        "Material",
+        "ResponseEvent"
+      ],
+      "examples": [
+        [
+          "IV级响应",
+          "reference",
+          "某防洪预案"
+        ],
+        [
+          "开闸泄洪",
+          "reference",
+          "调度规程"
+        ]
+      ]
+    },
+    {
+      "relation_name": "has_threshold",
+      "name_zh": "水位/库容属性",
+      "domain": [
+        "Facility"
+      ],
+      "range": [
+        "Threshold"
+      ],
+      "examples": [
+        [
+          "某水库",
+          "has_threshold",
+          "汛限水位113.0米"
+        ]
+      ]
+    },
+    {
+      "relation_name": "located_at",
+      "name_zh": "位于",
+      "domain": [
+        "Facility",
+        "Organization"
+      ],
+      "range": [
+        "Organization"
+      ],
+      "examples": [
+        [
+          "某水库",
+          "located_at",
+          "某县"
+        ]
+      ]
+    }
+  ],
+  "notes": "Generated from src/schema/flood_schema.py for OpenSPG import."
+}
