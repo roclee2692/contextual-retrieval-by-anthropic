@@ -19,7 +19,7 @@ cook_book_db_vectordb/
 # Data (keep structure, ignore large files - but allow 防洪预案/*.pdf as source data)
 data/*.pdf
 !data/防洪预案/
-!data/防洪预案/*.pdf
+data/防洪预案/*.pdf
 data/水利文件/
 data/processed/
 
