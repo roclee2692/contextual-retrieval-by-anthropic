@@ -45,7 +45,7 @@ ollama pull gemma3:12b    # QA model
 ollama pull gemma2:2b     # Context generation model (optional)
 ```
 
-> ⚠️ **Data Notice**: The `data/water_conservancy_files/` directory contains **internal confidential documents** that cannot be publicly distributed. Only the flood prevention plan data in `data/防洪预案/` is included in this public repository for research purposes.
+> ⚠️ **Data Notice**: The flood prevention and water conservancy source documents (under `data/防洪预案/`) are **internal confidential files** and are **not included** in this public repository. To reproduce Phase 2 & 3 experiments, you need to provide your own flood prevention plan documents in PDF format and place them in `data/防洪预案/`.
 
 ### Running Experiments
 
