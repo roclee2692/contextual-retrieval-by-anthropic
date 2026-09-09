@@ -1,64 +1,52 @@
-# Phase 3 Reranker 消融实验报告
+# Phase 3 Reranker Ablation Report — Legacy Results and Evaluation Limits
 
-**生成时间**: 2026-02-03 12:46:14
+**Recorded:** 2026-02-03 12:46:14
+**Status:** **DEPRECATED AS A PERFORMANCE COMPARISON.** The raw records below are retained for reproducibility, but they do not establish Reranker effectiveness or statistical significance.
 
-## 实验设计
+## Evaluation protocol
 
-**2×2 消融设计**:
-- 因子 A: 检索方法 (Baseline vs CR Enhanced)
-- 因子 B: Reranker (无 vs 有)
-- Reranker 模型: `BAAI/bge-reranker-base`
-- 测试问题数: n=30
+This repository contains two distinct evaluation protocols:
 
-## 主要结果
+| Protocol | Dataset / decision rule | Reported values | Valid use |
+|---|---|---|---|
+| Main Phase 3 experiment | 30 questions; **Top-1 Retrieval Accuracy** from a keyword-hit judgement | Baseline 76.7% (23/30); CR 80.0% (24/30) | The repository's primary Baseline-vs-CR result |
+| Early Reranker ablation | 30 questions; **Top-3 Keyword Hit Rate** after concatenating retrieved results | 96.7% / 86.7% | Legacy diagnostic only; not comparable with Top-1 Retrieval Accuracy |
 
-### 总体对比
+The early ablation also reported original retriever scores (for example, 0.5145) beside Cross-Encoder scores (for example, 0.9552). These values are produced by different scoring functions and numerical scales. Their difference is **not** a retrieval-performance gain, and a paired t-test of those raw scores is invalid evidence for a Reranker effect. Accordingly, historical t/p-value claims are preserved only as deprecated records below and are not conclusions of this report.
 
-| 方法 | 平均分数 | 检索正确率 | 正确数 |
-|------|----------|------------|--------|
-| Baseline | 0.5145 | 96.7% | 29/30 |
-| Baseline + Reranker | 0.9552 | 96.7% | 29/30 |
-| CR Enhanced | 0.5188 | 86.7% | 26/30 |
-| **CR + Reranker** | **0.9580** | **96.7%** | **29/30** |
+## Legacy 2×2 record (not a cross-protocol comparison)
 
-### 2×2 消融表
+|  | Without Reranker | With Reranker | Legacy Top-3 Keyword Hit Rate difference |
+|--|---:|---:|---:|
+| Baseline | 96.7% (29/30) | 96.7% (29/30) | +0.0 percentage points |
+| CR | 86.7% (26/30) | 96.7% (29/30) | +10.0 percentage points |
 
-|  | 无 Reranker | 有 Reranker | Reranker 提升 |
-|--|-------------|-------------|---------------|
-| **Baseline** | 96.7% | 96.7% | +0.0% |
-| **CR** | 86.7% | 96.7% | +10.0% |
-| **CR 提升** | +-10.0% | +0.0% | - |
+These are **legacy Top-3 Keyword Hit Rate** values. They must not be called “Retrieval Accuracy,” compared against the 76.7%/80.0% main Top-1 result, or used to rank Baseline, CR, and Reranker configurations.
 
-### 分类结果对比
+## Legacy score record (not a performance metric)
 
-#### Baseline vs CR + Reranker
+| Method | Score function | Mean reported score | Legacy Top-3 Keyword Hit Rate |
+|---|---|---:|---:|
+| Baseline | Retriever score | 0.5145 | 96.7% |
+| Baseline + Reranker | Cross-Encoder score | 0.9552 | 96.7% |
+| CR Enhanced | Retriever score | 0.5188 | 86.7% |
+| CR + Reranker | Cross-Encoder score | 0.9580 | 96.7% |
 
-| 类别 | Baseline | CR + Reranker | 提升 |
-|------|----------|---------------|------|
-| A-数值属性 | 90% | 90% | +0% |
-| B-实体关系 | 100% | 100% | +0% |
-| C-流程条件 | 100% | 100% | +0% |
+**Do not compute or report a percentage improvement from 0.5145 to 0.9552.** The values are not on a common scale. The historical `p=0.0000` / paired-t-test entries that compared these columns are deprecated and intentionally omitted as inferential results.
 
-## 统计检验
+## Main Phase 3 result (separate protocol)
 
-| 对比 | t 值 | p 值 | 显著性 |
-|------|------|------|--------|
-| Baseline vs CR | -5.012 | 0.0000 | ✅ 显著 |
-| Baseline → Baseline+RR | -17.137 | 0.0000 | ✅ 显著 |
-| CR → CR+RR | -17.131 | 0.0000 | ✅ 显著 |
-| Baseline vs CR+RR | -17.340 | 0.0000 | ✅ 显著 |
+For the primary, Top-1 protocol, the recorded results are:
 
-### 符号检验 (CR+Reranker vs Baseline)
+| Method | Top-1 Retrieval Accuracy | Correct count |
+|---|---:|---:|
+| Baseline | 76.7% | 23/30 |
+| CR Enhanced | 80.0% | 24/30 |
 
-| CR+RR 胜 | CR+RR 负 | 平局 |
-|----------|----------|------|
-| 29 | 1 | 0 |
+This table is not an ablation baseline for the legacy Top-3 Reranker results. It is shown only to prevent accidental mixing of protocols.
 
-## 结论
+## What can and cannot be concluded
 
-1. **CR 效果验证**: CR 相比 Baseline 显著提升 (p=0.0000)
-2. **Reranker 效果**: 
-   - 对 Baseline: 显著提升
-   - 对 CR: 显著提升
-3. **最佳配置**: **CR + Reranker** 达到最高正确率 96.7%
-4. **vs Baseline 提升**: +0.0% (从 96.7% 到 96.7%)
+- The legacy run shows that a Cross-Encoder was applied to the same candidate lists; it does **not** quantify a reliable performance benefit.
+- No claim that Reranker is “most effective,” “significantly improves,” or “corrects errors” is supported by these records.
+- A valid reranking evaluation must hold the test set, candidate pool, relevance labels, and cutoff constant; compare pre- and post-rerank results using common metrics such as Accuracy@1, Recall@K, MRR, and nDCG@K; and perform any statistical test on one of those common per-query metrics.

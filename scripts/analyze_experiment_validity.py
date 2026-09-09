@@ -1,5 +1,9 @@
-"""
-实验结果统计分析 - 评估 Phase 3 结果的统计显著性
+"""Phase 3 descriptive analysis for same-retriever score records.
+
+This script does not evaluate Reranker performance. Retriever and Cross-Encoder
+scores use different functions/scales and must never be compared or tested here.
+For a performance claim, evaluate a fixed candidate set with shared relevance
+labels and a common metric (Accuracy@1, Recall@K, MRR, or nDCG@K).
 """
 import json
 import sys
@@ -18,7 +22,7 @@ baseline = data["baseline"]
 cr = data["cr_enhanced"]
 
 print("="*80)
-print("  Phase 3 实验结果统计分析 - 评估可靠性")
+print("  Phase 3 描述性分析（非 Reranker 性能验证）")
 print("="*80)
 
 # 1. 提取分数对
@@ -52,30 +56,21 @@ print(f"平均差异 (CR - Baseline) = {mean_diff:+.6f}")
 print(f"差异标准差 = {std_diff:.6f}")
 print(f"标准误 (SE) = {se:.6f}")
 
-# 3. 配对 t 检验 (手动计算，不依赖 scipy)
-print("\n[3] 配对 t 检验 (Paired t-test)")
+# 3. Historical t statistic (not an inferential test)
+print("\n[3] 历史 t 统计量（不作推断检验）")
 print("-"*40)
 t_stat = mean_diff / se if se > 0 else 0
 df = len(diffs) - 1
 
-# t 分布临界值 (双尾 α=0.05, df=9)
-# t_critical ≈ 2.262 for df=9, α=0.05 two-tailed
-t_critical = 2.262
-
 print(f"t 统计量 = {t_stat:.4f}")
 print(f"自由度 df = {df}")
-print(f"临界值 t_crit (α=0.05, 双尾) = {t_critical}")
+print("不计算 p 值或显著性：Retriever score 不是统一的排序质量指标。")
 
-if abs(t_stat) > t_critical:
-    print(f"结论: |t| > t_crit, 差异显著 (p < 0.05)")
-else:
-    print(f"结论: |t| ≤ t_crit, 差异不显著 (p > 0.05)")
-
-# 4. 效应量 (Cohen's d)
-print("\n[4] 效应量 (Cohen's d)")
+# 4. Standardized score difference (descriptive only)
+print("\n[4] 标准化 score 差异（仅描述性记录）")
 print("-"*40)
 cohens_d = mean_diff / std_diff if std_diff > 0 else 0
-print(f"Cohen's d = {cohens_d:.4f}")
+print(f"Cohen's d = {cohens_d:.4f}（不代表检索质量效应量）")
 if abs(cohens_d) < 0.2:
     effect_size = "可忽略 (negligible)"
 elif abs(cohens_d) < 0.5:
@@ -84,20 +79,12 @@ elif abs(cohens_d) < 0.8:
     effect_size = "中等 (medium)"
 else:
     effect_size = "大 (large)"
-print(f"效应大小: {effect_size}")
+print(f"历史 score 差异分级: {effect_size}（不用于性能结论）")
 
 # 5. 95% 置信区间
 print("\n[5] 95% 置信区间")
 print("-"*40)
-ci_lower = mean_diff - t_critical * se
-ci_upper = mean_diff + t_critical * se
-print(f"差异的 95% CI: [{ci_lower:.6f}, {ci_upper:.6f}]")
-if ci_lower > 0:
-    print("置信区间不包含0, 可以认为 CR > Baseline")
-elif ci_upper < 0:
-    print("置信区间不包含0, 可以认为 CR < Baseline")
-else:
-    print("⚠️ 置信区间包含0, 无法排除 CR = Baseline 的可能")
+print("不报告置信区间：它会把 Retriever score 的差异误读为检索质量差异。")
 
 # 6. 符号检验 (非参数)
 print("\n[6] 符号检验 (Sign Test) - 非参数方法")
@@ -131,7 +118,7 @@ print("\n⚠️ 潜在问题:")
 print("-"*40)
 issues = [
     ("样本量太小", f"n={len(diffs)}, 统计功效不足", "建议至少 30+ 个测试问题"),
-    ("评价指标单一", "只用了相似度得分", "应增加人工评估、MRR、NDCG 等"),
+    ("评价指标单一", "只用了 Retriever score，不能代表排序质量", "固定候选集后使用 Accuracy@1、Recall@K、MRR、nDCG@K"),
     ("测试问题设计", "问题直接包含实体名，区分度不足", "应增加需要歧义消解的问题"),
     ("缺乏重复实验", "只运行了 1 次", "应重复 3-5 次取平均"),
     ("嵌入模型一致性", "BGE 模型加载可能有随机性", "应固定随机种子"),
@@ -167,14 +154,14 @@ print("\n" + "="*80)
 print("  综合结论")
 print("="*80)
 print(f"""
-1. 统计显著性: {'达到' if abs(t_stat) > t_critical else '未达到'} (t={t_stat:.3f}, p {'<' if abs(t_stat) > t_critical else '>'} 0.05)
-2. 效应量: {effect_size} (d={cohens_d:.3f})
-3. 置信区间: [{ci_lower:.4f}, {ci_upper:.4f}] {'不' if ci_lower <= 0 <= ci_upper else ''}包含 0
+1. 历史 score 统计量: t={t_stat:.3f}；不计算 p 值/置信区间，且不构成检索质量或 Reranker 性能结论
+2. 标准化 score 差异: {effect_size} (d={cohens_d:.3f})；不代表检索质量效应量
+3. 不报告 score 差异的置信区间，避免将异构或代理分数误读为排序质量
 
 🔍 解读:
-- 当前实验的 1.1% 提升 {'具有统计显著性' if abs(t_stat) > t_critical else '不能排除随机误差'}
-- 效应量{'' if abs(cohens_d) >= 0.2 else '过'}小，实际意义{'有限' if abs(cohens_d) < 0.5 else '明显'}
-- 需要更多测试问题和重复实验来确认结论
+- 这些分数仅可在同一 Retriever score 函数下作描述性记录，不能与 Cross-Encoder 分数直接比较
+- 需要固定候选集与相关性标注，以 Accuracy@1、Recall@K、MRR、nDCG@K 重新评估
+- 任何显著性检验必须使用同一项按查询计算的统一指标
 
 📋 改进建议:
 1. 增加测试问题至 30-50 个
