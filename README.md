@@ -443,7 +443,7 @@ contextual-retrieval-by-anthropic/
 |-------|---------------------|-----------|-----------|-----------------|
 | **Phase 1** | Structured Lists (Canteen) | ✅ Strong disambiguation / ❌ Info loss | ✅ Effective | CR is double-edged |
 | **Phase 2** | Self-contained Docs (Flood) | ⚠️ Equal to Baseline | ❌ Ineffective | Docs don't need CR |
-| **Phase 3** | Same as Phase 2 + OneKE | ⚠️ Significant but small improvement | ❌ Model capability insufficient | Need dedicated extraction models |
+| **Phase 3** | Same as Phase 2 + OneKE | Top-1 keyword hit: Baseline 76.7%, CR 80.0% | ❌ Model capability insufficient | Score tests do not establish a significant retrieval-quality improvement; labelled evaluation is needed |
 
 ### Academic Value
 
